@@ -52,10 +52,10 @@ export function ChatMessages({ messages, isLoading }: Props) {
           >
             <div
               className={cn(
-                'group relative max-w-[80%] break-words text-sm',
+                'group relative max-w-[80%] break-words text-sm p-3 rounded-lg',
                 {
-                  'bg-white text-black rounded-xl p-3 shadow-md': message.role === 'user',
-                  'bg-card p-3 rounded-lg': message.role === 'assistant',
+                  'bg-primary text-primary-foreground rounded-xl shadow-md': message.role === 'user',
+                  'bg-card rounded-xl shadow-md': message.role === 'assistant',
                 }
               )}
             >
