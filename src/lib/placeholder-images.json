@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "sage-ai-logo",
+      "description": "SageAI Logo",
+      "imageUrl": "https://images.unsplash.com/photo-1762968286778-60e65336d5ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyb2JvdCUyMGxvZ298ZW58MHx8fHwxNzYzNjA3MjQzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "robot logo"
+    }
+  ]
 }
