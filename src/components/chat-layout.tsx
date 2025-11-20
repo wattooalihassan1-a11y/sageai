@@ -40,11 +40,12 @@ export function ChatLayout() {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const handleSubmit = async (values: { prompt: string }) => {
+  const handleSubmit = async (values: { prompt: string, image?: string }) => {
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'user',
       content: values.prompt,
+      image: values.image,
     };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
@@ -59,14 +60,15 @@ export function ChatLayout() {
     setMessages((prev) => [...prev, pendingMessage]);
 
     const history: ConversationHistory[] = newMessages.map(
-      ({ role, content }) => ({ role, content })
+      ({ role, content, image }) => ({ role, content, image })
     );
 
     const result = await getAiResponse(
       history,
       values.prompt,
       settings.language,
-      settings.persona
+      settings.persona,
+      values.image
     );
 
     setIsLoading(false);

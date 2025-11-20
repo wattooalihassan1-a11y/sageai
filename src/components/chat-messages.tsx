@@ -5,6 +5,7 @@ import { ScrollArea } from './ui/scroll-area';
 import type { ChatMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { ChatAvatar } from './chat-avatar';
+import Image from 'next/image';
 
 type Props = {
   messages: ChatMessage[];
@@ -43,6 +44,11 @@ export function ChatMessages({ messages, fontSize }: Props) {
               )}
               style={{ fontSize: `${fontSize}px` }}
             >
+              {message.image && (
+                <div className="relative w-48 h-48 mb-2 rounded-md overflow-hidden">
+                  <Image src={message.image} alt="user upload" fill className="object-cover" />
+                </div>
+              )}
               {message.isPending ? (
                 <div className="flex items-center justify-center gap-2">
                   <span className="h-2 w-2 bg-current rounded-full animate-pulse [animation-delay:-0.3s]"></span>

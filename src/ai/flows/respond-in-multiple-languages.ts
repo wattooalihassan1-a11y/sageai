@@ -14,6 +14,7 @@ import {z} from 'genkit';
 const RespondInLanguageInputSchema = z.object({    
   userQuery: z.string().describe('The query from the user.'),
   language: z.string().describe('The language in which the AI should respond.'),
+  image: z.string().optional().describe("A photo of a plant, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
 });
 
 export type RespondInLanguageInput = z.infer<typeof RespondInLanguageInputSchema>;
@@ -38,6 +39,10 @@ You must respond to the query in the specified language.
 User Query: {{{userQuery}}}
 
 Language: {{{language}}}
+{% if image %}
+Image:
+{{media url=image}}
+{% endif %}
 
 Response:`,
 });

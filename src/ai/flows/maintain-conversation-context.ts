@@ -16,7 +16,9 @@ const MaintainConversationContextInputSchema = z.object({
   conversationHistory: z.array(z.object({
     role: z.enum(['user', 'assistant']),
     content: z.string(),
+    image: z.string().optional(),
   })).optional().describe('The history of the conversation so far.'),
+  image: z.string().optional().describe("A photo of a plant, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
 });
 export type MaintainConversationContextInput = z.infer<typeof MaintainConversationContextInputSchema>;
 
@@ -43,6 +45,10 @@ Conversation History:
 {% endif %}
 
 User Input: {{userInput}}
+{% if image %}
+Image:
+{{media url=image}}
+{% endif %}
 
 Assistant: `,
 });

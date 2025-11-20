@@ -15,14 +15,16 @@ export async function getAiResponse(
   userInput: string,
   language: string,
   persona: string,
+  image?: string
 ) {
   try {
     const fullPrompt = `${persona ? `Your persona is: "${persona}". Respond accordingly. ` : ''}${userInput}`;
 
-    if (language && language.toLowerCase() !== 'english') {
+    if (language && language.toLowerCase() !== 'English') {
       const input: RespondInLanguageInput = {
         userQuery: fullPrompt,
         language: language,
+        image,
       };
       const result = await respondInLanguage(input);
       return { response: result.response };
@@ -39,6 +41,7 @@ export async function getAiResponse(
       const input: MaintainConversationContextInput = {
         userInput: userInput,
         conversationHistory: history,
+        image,
       };
       
       // We pass the original user input to the flow directly, but modify the history.
