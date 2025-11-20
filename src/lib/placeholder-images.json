@@ -1,10 +1,10 @@
 {
   "placeholderImages": [
     {
-      "id": "wisdom-ai-logo",
-      "description": "Wisdom AI Logo",
-      "imageUrl": "https://images.unsplash.com/photo-1541417828549-715d9782553c?q=80&w=800&auto=format&fit=crop",
-      "imageHint": "robot head"
+      "id": "sage-ai-logo",
+      "description": "SageAI Logo",
+      "imageUrl": "https://images.unsplash.com/photo-1620712943543-285f726a8484?q=80&w=800&auto=format&fit=crop",
+      "imageHint": "abstract robot"
     }
   ]
 }

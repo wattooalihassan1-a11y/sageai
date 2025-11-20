@@ -27,17 +27,13 @@ export function ChatMessages({ messages, isLoading }: Props) {
       <div className="p-4 md:p-6 space-y-6 max-w-3xl mx-auto">
         {isLoading && messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
-             <div className="flex items-center justify-center gap-2">
-              <span className="h-3 w-3 bg-primary rounded-full animate-pulse [animation-delay:-0.3s]"></span>
-              <span className="h-3 w-3 bg-primary rounded-full animate-pulse [animation-delay:-0.15s]"></span>
-              <span className="h-3 w-3 bg-primary rounded-full animate-pulse"></span>
-            </div>
+            <p className="text-muted-foreground">Loading...</p>
           </div>
         )}
         {messages.map((message, index) => (
           <div
             key={message.id}
-            className={cn('flex items-end gap-3', {
+            className={cn('flex items-start gap-4', {
               'justify-end': message.role === 'user',
             })}
             ref={index === messages.length - 1 ? lastMessageRef : null}
@@ -45,10 +41,10 @@ export function ChatMessages({ messages, isLoading }: Props) {
             {message.role === 'assistant' && <ChatAvatar message={message} />}
             <div
               className={cn(
-                'rounded-2xl p-3 max-w-[80%] break-words text-sm',
+                'rounded-xl p-3 max-w-[80%] break-words text-sm',
                 {
-                  'bg-primary text-primary-foreground rounded-br-none': message.role === 'user',
-                  'bg-muted rounded-bl-none': message.role === 'assistant',
+                  'bg-primary text-primary-foreground': message.role === 'user',
+                  'bg-muted': message.role === 'assistant',
                 }
               )}
             >
@@ -67,6 +63,7 @@ export function ChatMessages({ messages, isLoading }: Props) {
                 <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
               ) : null}
             </div>
+             {message.role === 'user' && <ChatAvatar message={message} />}
           </div>
         ))}
       </div>

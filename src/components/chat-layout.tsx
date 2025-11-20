@@ -31,7 +31,7 @@ const initialMessages: ChatMessage[] = [
   {
     id: 'init',
     role: 'assistant',
-    content: "Assalamu alaikum! I'm Wisdom AI. How can I assist you today?",
+    content: "Assalamu alaikum! I'm SageAI. How can I assist you today?",
   },
 ];
 
@@ -66,7 +66,10 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
   }, [])
   
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient) {
+      setMessages(initialMessages);
+      return;
+    };
     try {
       const chatId = localStorage.getItem('activeChatId') || `chat_${Date.now()}`;
       setActiveChatId(chatId);
@@ -160,13 +163,12 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
 
   return (
     <div className="relative flex flex-col h-full">
-      <header className="grid grid-cols-3 items-center p-4 border-b">
-        <div className="w-10"></div>
-        <div className="flex items-baseline justify-center text-center gap-2">
-            <h1 className="text-xl font-semibold">Wisdom AI</h1>
-            <span className="text-xs text-muted-foreground">by Ali Hassan Wattoo</span>
+      <header className="flex items-center p-4 border-b">
+        <div className="flex-1"></div>
+        <div className="flex-1 flex justify-center text-center">
+            <h1 className="text-xl font-semibold">SageAI <span className="text-xs text-muted-foreground">by Ali Hassan Wattoo</span></h1>
         </div>
-        <div className="flex justify-end">
+        <div className="flex-1 flex justify-end">
           <SettingsMenu settings={settings} onSettingsChange={onSettingsChange} />
         </div>
       </header>

@@ -9,14 +9,14 @@ type Props = {
 };
 
 export function ChatAvatar({ message }: Props) {
-  const assistantAvatar = PlaceHolderImages.find(p => p.id === 'wisdom-ai-logo');
+  const assistantAvatar = PlaceHolderImages.find(p => p.id === 'sage-ai-logo');
 
   if (message.role === "user") {
     // A real app would get user info from auth
     const userName = "User"; 
     return (
-      <Avatar className="h-8 w-8 bg-primary text-primary-foreground">
-        <AvatarFallback className="bg-primary text-primary-foreground">
+      <Avatar>
+        <AvatarFallback>
           {userName.charAt(0)}
         </AvatarFallback>
       </Avatar>
@@ -24,9 +24,9 @@ export function ChatAvatar({ message }: Props) {
   }
 
   return (
-    <Avatar className="h-8 w-8 bg-background">
+    <Avatar>
       {assistantAvatar ? (
-         <div className="relative h-8 w-8">
+         <div className="relative h-10 w-10">
             <Image 
               src={assistantAvatar.imageUrl} 
               alt={assistantAvatar.description}
@@ -37,7 +37,7 @@ export function ChatAvatar({ message }: Props) {
           </div>
       ) : (
         <AvatarFallback>
-            <WisdomAI className="h-5 w-5 text-primary" />
+            <WisdomAI className="h-6 w-6 text-primary" />
         </AvatarFallback>
       )}
     </Avatar>

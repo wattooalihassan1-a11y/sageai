@@ -92,7 +92,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleFormSubmit)}
-            className="relative flex items-end gap-2"
+            className="relative flex items-center gap-2"
           >
             <input
               type="file"
@@ -121,21 +121,20 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
                           <ImagePlus className="h-5 w-5 text-muted-foreground" />
                           <span className="sr-only">Attach file</span>
                         </Button>
-                        <Textarea
-                          placeholder={"Message Wisdom AI..."}
-                          {...field}
-                          disabled={isLoading}
-                          autoComplete="off"
-                          className="bg-accent border-border rounded-full shadow-sm min-h-[52px] resize-none py-3 pl-12 pr-4 text-base"
-                          onKeyDown={handleKeyDown}
-                        />
+                      <Textarea
+                        placeholder="Message SageAI..."
+                        {...field}
+                        disabled={isLoading}
+                        onKeyDown={handleKeyDown}
+                        className="min-h-[52px] resize-none pl-12 pr-16 py-3"
+                      />
                     </div>
                   </FormControl>
                 </FormItem>
               )}
             />
 
-            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="h-12 w-12 shrink-0 rounded-full">
+            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="absolute right-2 top-1/2 -translate-y-1/2">
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
