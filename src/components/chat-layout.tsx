@@ -55,28 +55,37 @@ type Props = {
 };
 
 export function ChatLayout({ settings, onSettingsChange }: Props) {
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const storedMessages = localStorage.getItem('chatHistory');
+        if (storedMessages) {
+          return JSON.parse(storedMessages);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to parse chat history from localStorage", error);
+    }
+    return initialMessages;
+  });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { newChat } = useAppShell();
 
   useEffect(() => {
     try {
-      const storedMessages = localStorage.getItem('chatHistory');
-      if (storedMessages) {
-        setMessages(JSON.parse(storedMessages));
+      if (typeof window !== 'undefined') {
+        if (messages.length > 0 && messages[0].id !== 'init') {
+          localStorage.setItem('chatHistory', JSON.stringify(messages));
+        } else if (messages.length === 0 || (messages.length === 1 && messages[0].id === 'init')) {
+           localStorage.removeItem('chatHistory');
+        }
       }
     } catch (error) {
-      console.error("Failed to parse chat history from localStorage", error);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (messages.length > 0 && messages[0].id !== 'init') {
-      localStorage.setItem('chatHistory', JSON.stringify(messages));
+      console.error("Failed to save chat history to localStorage", error);
     }
   }, [messages]);
-
+  
   const handleNewChat = () => {
     setMessages(initialMessages);
     newChat();
@@ -141,9 +150,9 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
     <div className="relative flex flex-col h-full">
       <header className="grid grid-cols-3 items-center p-4 border-b">
         <div className="w-10"></div>
-        <div className="flex flex-col items-center justify-center text-center">
+        <div className="flex items-baseline justify-center text-center gap-2">
             <h1 className="text-xl font-semibold">SageAI</h1>
-            <span className="text-sm text-muted-foreground self-end -mr-4">by Ali Hassan Wattoo</span>
+            <span className="text-sm text-muted-foreground">by Ali Hassan Wattoo</span>
         </div>
         <div className="flex justify-end">
           <SettingsMenu settings={settings} onSettingsChange={onSettingsChange} />
