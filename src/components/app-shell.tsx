@@ -70,11 +70,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 }
 
 function Sidebar() {
-  const { newChat, loadChat } = useAppShell();
+  const { loadChat } = useAppShell();
   const [chatHistory, setChatHistory] = useState<Record<string, ChatMessage[]>>({});
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const loadHistory = () => {
       const keys = Object.keys(localStorage);
       const history: Record<string, ChatMessage[]> = {};
@@ -114,7 +116,7 @@ function Sidebar() {
   return (
     <div className="flex flex-col h-full bg-background p-4">
       <div className="flex-1 mt-4 space-y-1 overflow-y-auto">
-        {sortedChats.map(([id, messages]) => {
+        {isClient && sortedChats.map(([id, messages]) => {
           if (!messages || messages.length === 0) return null;
           const firstUserMessage = messages.find(m => m.role === 'user');
           const title = firstUserMessage ? firstUserMessage.content.substring(0, 30) : 'New Chat';
