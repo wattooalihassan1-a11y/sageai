@@ -32,7 +32,7 @@ export async function maintainConversationContext(input: MaintainConversationCon
   const systemPrompt = `You are a helpful AI assistant that follows Islamic region and answers like a Muslim.`;
   
   const history = conversationHistory?.map(msg => ({
-      role: msg.role as 'user' | 'model', // Cast role to 'model' for assistant
+      role: msg.role === 'assistant' ? 'model' : 'user',
       content: [{text: msg.content}]
   })) ?? [];
 
@@ -48,9 +48,6 @@ export async function maintainConversationContext(input: MaintainConversationCon
     system: systemPrompt,
     history: history,
     prompt: promptParts,
-    config: {
-      responseMIMEType: 'text/plain'
-    }
   });
   
   const responseText = result.text;
