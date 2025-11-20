@@ -9,9 +9,10 @@ import Image from 'next/image';
 
 type Props = {
   messages: ChatMessage[];
+  isLoading: boolean;
 };
 
-export function ChatMessages({ messages }: Props) {
+export function ChatMessages({ messages, isLoading }: Props) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
@@ -24,6 +25,15 @@ export function ChatMessages({ messages }: Props) {
   return (
     <ScrollArea className="flex-1" ref={scrollAreaRef}>
       <div className="p-4 md:p-6 space-y-6">
+        {isLoading && messages.length === 0 && (
+          <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center gap-2">
+              <span className="h-3 w-3 bg-primary rounded-full animate-pulse [animation-delay:-0.3s]"></span>
+              <span className="h-3 w-3 bg-primary rounded-full animate-pulse [animation-delay:-0.15s]"></span>
+              <span className="h-3 w-3 bg-primary rounded-full animate-pulse"></span>
+            </div>
+          </div>
+        )}
         {messages.map((message, index) => (
           <div
             key={message.id}
