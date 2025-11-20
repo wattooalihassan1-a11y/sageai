@@ -25,6 +25,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [chatKey, setChatKey] = useState(0);
 
   const newChat = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('chatHistory');
+    }
     setChatKey(prev => prev + 1);
   };
 

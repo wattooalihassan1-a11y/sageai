@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getAiResponse } from '@/app/actions';
 import { ChatInput } from '@/components/chat-input';
 import { ChatMessages } from '@/components/chat-messages';
@@ -59,6 +59,23 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { newChat } = useAppShell();
+
+  useEffect(() => {
+    try {
+      const storedMessages = localStorage.getItem('chatHistory');
+      if (storedMessages) {
+        setMessages(JSON.parse(storedMessages));
+      }
+    } catch (error) {
+      console.error("Failed to parse chat history from localStorage", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (messages.length > 0 && messages[0].id !== 'init') {
+      localStorage.setItem('chatHistory', JSON.stringify(messages));
+    }
+  }, [messages]);
 
   const handleNewChat = () => {
     setMessages(initialMessages);
