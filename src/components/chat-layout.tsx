@@ -42,6 +42,7 @@ export function ChatLayout() {
   };
 
   const handleSubmit = async (values: { prompt: string; image?: string }) => {
+    if (!values.prompt.trim()) return;
     setIsLoading(true);
 
     const userMessage: ChatMessage = {
@@ -72,8 +73,6 @@ export function ChatLayout() {
     const result = await getAiResponse(
       history.slice(0, -1), // Exclude user's latest message from history for the call
       values.prompt,
-      settings.language,
-      settings.persona,
       values.image
     );
 
@@ -85,7 +84,7 @@ export function ChatLayout() {
         title: 'Error',
         description: result.error,
       });
-      setMessages((prev) => prev.slice(0, -1));
+      setMessages((prev) => prev.slice(0, -1)); // Remove pending message
     } else {
       const aiMessage: ChatMessage = {
         id: crypto.randomUUID(),
