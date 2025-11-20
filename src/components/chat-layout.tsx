@@ -33,7 +33,6 @@ export function ChatLayout() {
   const [settings, setSettings] = useState<Settings>({
     language: 'English',
     persona: '',
-    fontSize: 14,
   });
 
   const handleSettingsChange = (newSettings: Partial<Settings>) => {
@@ -115,7 +114,7 @@ export function ChatLayout() {
                 <h1 className="text-lg font-headline font-semibold">SageAI</h1>
             </div>
         </div>
-        <ChatMessages messages={messages} fontSize={settings.fontSize} />
+        <ChatMessages messages={messages} />
         <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
       </SidebarInset>
     </SidebarProvider>

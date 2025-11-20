@@ -9,10 +9,9 @@ import Image from 'next/image';
 
 type Props = {
   messages: ChatMessage[];
-  fontSize: number;
 };
 
-export function ChatMessages({ messages, fontSize }: Props) {
+export function ChatMessages({ messages }: Props) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
@@ -36,13 +35,12 @@ export function ChatMessages({ messages, fontSize }: Props) {
             <ChatAvatar message={message} />
             <div
               className={cn(
-                'rounded-lg p-3 max-w-[80%] break-words',
+                'rounded-lg p-3 max-w-[80%] break-words text-sm',
                 {
                   'bg-primary text-primary-foreground': message.role === 'user',
                   'bg-card': message.role === 'assistant',
                 }
               )}
-              style={{ fontSize: `${fontSize}px` }}
             >
               {message.image && (
                 <div className="relative w-48 h-48 mb-2 rounded-md overflow-hidden">

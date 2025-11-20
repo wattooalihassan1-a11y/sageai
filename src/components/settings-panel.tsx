@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from './ui/select';
 import { Textarea } from './ui/textarea';
-import { Slider } from './ui/slider';
 
 const languages = [
   'English',
@@ -59,18 +58,6 @@ export function SettingsPanel({ settings, onSettingsChange }: Props) {
           value={settings.persona}
           onChange={(e) => onSettingsChange({ persona: e.target.value })}
           rows={3}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="font-size">Font Size ({settings.fontSize}px)</Label>
-        <Slider
-          id="font-size"
-          min={12}
-          max={20}
-          step={1}
-          value={[settings.fontSize]}
-          onValueChange={(value) => onSettingsChange({ fontSize: value[0] })}
         />
       </div>
     </div>

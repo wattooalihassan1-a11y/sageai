@@ -9,7 +9,6 @@ export type ChatMessage = {
 export type Settings = {
   language: string;
   persona: string;
-  fontSize: number;
 };
 
 export type ConversationHistory = {
