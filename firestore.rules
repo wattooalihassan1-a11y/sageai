@@ -7,12 +7,16 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
+      // Allow user to read and write their own profile
+      // New users can create their own profile
       allow read, write: if isOwner(userId);
 
       match /chats/{chatId} {
+        // Allow user to read and write their own chats
         allow read, write: if isOwner(userId);
 
         match /messages/{messageId} {
+          // Allow user to read and write their own messages
           allow read, write: if isOwner(userId);
         }
       }

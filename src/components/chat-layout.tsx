@@ -26,9 +26,11 @@ import { useAuth, useUser, useFirestore } from '@/firebase';
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { LogIn, LogOut, MessageSquare, Plus } from 'lucide-react';
+import { LogIn, LogOut, MessageSquare, Plus, UserPlus } from 'lucide-react';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { addDoc, collection, doc, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { SignUpForm } from './signup-form';
 
 const initialMessages: ChatMessage[] = [
   {
@@ -51,6 +53,7 @@ export function ChatLayout() {
     language: 'English',
     persona: '',
   });
+  const [showSignUp, setShowSignUp] = useState(false);
 
   const chatsQuery = useMemo(() => {
     if (!user || !firestore) return null;
@@ -306,9 +309,14 @@ export function ChatLayout() {
               </Button>
             </div>
           ) : (
-            <Button onClick={handleLogin} className="m-2">
-              <LogIn /> Login with Google
-            </Button>
+            <div className='p-2 flex flex-col gap-2'>
+              <Button onClick={handleLogin}>
+                <LogIn /> Login with Google
+              </Button>
+              <Button variant="secondary" onClick={() => setShowSignUp(true)}>
+                <UserPlus /> Create an Account
+              </Button>
+            </div>
           )}
           <Separator />
           <SettingsPanel
@@ -328,6 +336,17 @@ export function ChatLayout() {
         <ChatMessages messages={messages} isLoading={chatMessagesLoading} />
         <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
       </SidebarInset>
+      <Dialog open={showSignUp} onOpenChange={setShowSignUp}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Account</DialogTitle>
+            <DialogDescription>
+              Enter your details below to create a new account.
+            </DialogDescription>
+          </DialogHeader>
+          <SignUpForm onSignUp={() => setShowSignUp(false)} />
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 }
