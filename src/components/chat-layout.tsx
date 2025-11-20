@@ -42,17 +42,18 @@ export function ChatLayout() {
   };
 
   const handleSubmit = async (values: { prompt: string; image?: string }) => {
+    setIsLoading(true);
+
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'user',
       content: values.prompt,
       image: values.image,
     };
-
-    const newMessages =
-      messages[0].id === 'init' ? [userMessage] : [...messages, userMessage];
+    
+    const currentMessages = messages[0].id === 'init' ? [] : messages;
+    const newMessages = [...currentMessages, userMessage];
     setMessages(newMessages);
-    setIsLoading(true);
 
     const pendingMessage: ChatMessage = {
       id: crypto.randomUUID(),
