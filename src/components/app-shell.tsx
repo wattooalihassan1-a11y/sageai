@@ -1,84 +1,86 @@
-
 'use client';
 
 import { cn } from '@/lib/utils';
-import { MessageCircle, Settings } from 'lucide-react';
+import { Menu, MessageSquare, Plus, Settings2 } from 'lucide-react';
 import React, { createContext, useContext, useState } from 'react';
 import { SageAI } from './icons';
 import { Button } from './ui/button';
-import { Plus } from 'lucide-react';
-
-type Tab = 'chat' | 'settings';
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 
 type AppShellContextType = {
-  activeTab: Tab;
-  setActiveTab: (tab: Tab) => void;
   newChat: () => void;
 };
 
 const AppShellContext = createContext<AppShellContextType | null>(null);
 
-export function useTabs() {
+export function useAppShell() {
   const context = useContext(AppShellContext);
   if (!context) {
-    throw new Error('useTabs must be used within an AppShell');
+    throw new Error('useAppShell must be used within an AppShell');
   }
   return context;
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const [activeTab, setActiveTab] = useState<Tab>('chat');
-  
-  // This key is used to force a re-render of the chat page
   const [chatKey, setChatKey] = useState(0);
 
   const newChat = () => {
     setChatKey(prev => prev + 1);
-    setActiveTab('chat');
-  }
+  };
 
   return (
-    <AppShellContext.Provider value={{ activeTab, setActiveTab, newChat }}>
-      <div className="flex flex-col h-screen bg-background">
-        <header className="flex items-center justify-between p-4 border-b">
-          <div className="flex items-center gap-2">
-            <SageAI className="h-7 w-7 text-primary" />
-            <h1 className="text-xl font-headline font-semibold">SageAI</h1>
-          </div>
-          <Button variant="ghost" size="icon" onClick={newChat}>
-            <Plus className="h-5 w-5" />
-          </Button>
-        </header>
+    <AppShellContext.Provider value={{ newChat }}>
+      <div className="flex h-screen w-full">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="fixed top-3 left-3 z-10 md:hidden">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-72 p-0">
+            <Sidebar />
+          </SheetContent>
+        </Sheet>
 
-        <main className="flex-1 overflow-y-auto">
-          <div key={activeTab === 'chat' ? chatKey : activeTab}>
-            {children}
-          </div>
+        <aside className="hidden md:flex md:flex-col w-72 border-r">
+          <Sidebar />
+        </aside>
+
+        <main className="flex-1 flex flex-col" key={chatKey}>
+          {children}
         </main>
-
-        <footer className="flex justify-around p-2 border-t bg-background">
-          <button
-            onClick={() => setActiveTab('chat')}
-            className={cn(
-              'flex flex-col items-center gap-1 p-2 rounded-lg w-24 transition-colors',
-              activeTab === 'chat' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent/50'
-            )}
-          >
-            <MessageCircle className="h-6 w-6" />
-            <span className="text-xs font-medium">Chat</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={cn(
-              'flex flex-col items-center gap-1 p-2 rounded-lg w-24 transition-colors',
-              activeTab === 'settings' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent/50'
-            )}
-          >
-            <Settings className="h-6 w-6" />
-            <span className="text-xs font-medium">Settings</span>
-          </button>
-        </footer>
       </div>
     </AppShellContext.Provider>
+  );
+}
+
+function Sidebar() {
+  const { newChat } = useAppShell();
+  return (
+    <div className="flex flex-col h-full bg-background p-4">
+      <Button
+        onClick={newChat}
+        className="w-full justify-start gap-2"
+        variant="outline"
+      >
+        <Plus className="h-4 w-4" />
+        New Chat
+      </Button>
+      <div className="flex-1 mt-4 space-y-2 overflow-y-auto">
+        {/* Chat history will go here */}
+        <div className="flex items-center gap-2 p-2 rounded-lg text-sm text-muted-foreground hover:bg-accent cursor-pointer">
+          <MessageSquare className="h-4 w-4" />
+          <span className="truncate">Example conversation</span>
+        </div>
+      </div>
+      <div className="mt-auto">
+         <div className="flex flex-col items-center justify-center text-center text-xs text-muted-foreground">
+          <SageAI className="h-6 w-6 mb-1" />
+          <p>Developed by</p>
+          <p className="font-semibold text-foreground/80">Ali Hassan Wattoo</p>
+        </div>
+      </div>
+    </div>
   );
 }

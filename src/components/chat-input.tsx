@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ImagePlus, Send, Loader2, X } from 'lucide-react';
 import { useRef, useState } from 'react';
@@ -63,26 +63,36 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      form.handleSubmit(handleFormSubmit)();
+    }
+  };
+
+
   return (
-    <div className="px-2 pb-2 md:px-4 md:pb-4 pt-2 bg-background">
-      <div className={cn("bg-card rounded-xl p-1 border shadow-sm", preview ? 'mb-2' : '')}>
+    <div className="px-4 pb-4 w-full max-w-3xl mx-auto">
+       <div className="relative">
         {preview && (
-          <div className="m-1 relative w-20 h-20 rounded-md overflow-hidden">
-            <Image src={preview} alt="Image preview" fill className="object-cover" />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-0 right-0 h-6 w-6 bg-black/50 hover:bg-black/75 text-white"
-              onClick={clearPreview}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
+            <div className="absolute bottom-full left-0 mb-2 p-2 bg-background border rounded-lg">
+              <div className="relative w-20 h-20 rounded-md overflow-hidden">
+                <Image src={preview} alt="Image preview" fill className="object-cover" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-0 right-0 h-6 w-6 bg-black/50 hover:bg-black/75 text-white"
+                  onClick={clearPreview}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleFormSubmit)}
-            className="flex items-center gap-1"
+            className="relative flex items-end gap-2"
           >
             <input
               type="file"
@@ -98,6 +108,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
               onClick={() => fileInputRef.current?.click()}
               disabled={isLoading}
               type="button"
+              className='absolute left-2 bottom-2'
             >
               <ImagePlus className="h-5 w-5 text-muted-foreground" />
               <span className="sr-only">Attach file</span>
@@ -109,23 +120,24 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormControl>
-                    <Input
+                    <Textarea
                       placeholder={"Message SageAI..."}
                       {...field}
                       disabled={isLoading}
                       autoComplete="off"
-                      className="bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                      className="bg-background border rounded-xl shadow-sm min-h-[52px] resize-none py-3 pl-12 pr-12 text-base"
+                      onKeyDown={handleKeyDown}
                     />
                   </FormControl>
                 </FormItem>
               )}
             />
 
-            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="bg-primary hover:bg-primary/90">
+            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="absolute right-2 bottom-2 h-8 w-8 bg-primary hover:bg-primary/90">
               {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Send className="h-5 w-5" />
+                <Send className="h-4 w-4" />
               )}
               <span className="sr-only">Send</span>
             </Button>

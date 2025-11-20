@@ -24,7 +24,7 @@ export function ChatMessages({ messages, isLoading }: Props) {
 
   return (
     <ScrollArea className="flex-1" ref={scrollAreaRef}>
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-6 max-w-3xl mx-auto">
         {isLoading && messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
              <div className="flex items-center justify-center gap-2">
@@ -37,9 +37,7 @@ export function ChatMessages({ messages, isLoading }: Props) {
         {messages.map((message, index) => (
           <div
             key={message.id}
-            className={cn('flex items-start gap-3', {
-              'flex-row-reverse': message.role === 'user',
-            })}
+            className={cn('flex items-start gap-4')}
             ref={index === messages.length - 1 ? lastMessageRef : null}
           >
             <ChatAvatar message={message} />
@@ -47,13 +45,13 @@ export function ChatMessages({ messages, isLoading }: Props) {
               className={cn(
                 'rounded-xl p-3 max-w-[80%] break-words text-sm',
                 {
-                  'bg-primary text-primary-foreground': message.role === 'user',
-                  'bg-card border': message.role === 'assistant',
+                  'bg-transparent': message.role === 'user',
+                  'bg-muted': message.role === 'assistant',
                 }
               )}
             >
               {message.image && (
-                <div className="relative w-48 h-48 mb-2 rounded-md overflow-hidden">
+                <div className="relative w-48 h-48 mb-2 rounded-md overflow-hidden border">
                   <Image src={message.image} alt="user upload" fill className="object-cover" />
                 </div>
               )}
@@ -64,7 +62,7 @@ export function ChatMessages({ messages, isLoading }: Props) {
                   <span className="h-2 w-2 bg-current rounded-full animate-pulse"></span>
                 </div>
               ) : (
-                <div className="prose prose-sm dark:prose-invert" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
+                <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
               )}
             </div>
           </div>

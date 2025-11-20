@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Bot } from "lucide-react";
+import { User } from "lucide-react";
 import type { ChatMessage } from "@/lib/types";
 import { SageAI } from "./icons";
 
@@ -10,9 +10,9 @@ type Props = {
 export function ChatAvatar({ message }: Props) {
   if (message.role === "user") {
     return (
-      <Avatar className="h-8 w-8">
+      <Avatar className="h-8 w-8 bg-secondary text-secondary-foreground">
         <AvatarFallback>
-          <User className="h-4 w-4" />
+          <User className="h-5 w-5" />
         </AvatarFallback>
       </Avatar>
     );
