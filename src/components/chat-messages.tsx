@@ -67,7 +67,6 @@ export function ChatMessages({ messages, isLoading }: Props) {
                 <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
               ) : null}
             </div>
-             {message.role === 'user' && <ChatAvatar message={message} />}
           </div>
         ))}
       </div>
