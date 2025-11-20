@@ -1,6 +1,6 @@
 import type { SVGProps } from "react";
 
-export function WisdomAI(props: SVGProps<SVGSVGElement>) {
+export function Terminal(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -12,9 +12,8 @@ export function WisdomAI(props: SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
       {...props}
     >
-      <path d="M12 2L2 7l10 5 10-5-10-5z" />
-      <path d="M2 17l10 5 10-5" />
-      <path d="M2 12l10 5 10-5" />
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" x2="20" y1="19" y2="19" />
     </svg>
   );
 }

@@ -1,145 +1,18 @@
 'use client';
 
-import { cn } from '@/lib/utils';
-import { Menu, MessageSquare, Plus, Settings2 } from 'lucide-react';
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { WisdomAI } from './icons';
-import { Button } from './ui/button';
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import type { ChatMessage } from '@/lib/types';
-
-type AppShellContextType = {
-  newChat: (clear?: boolean) => void;
-  loadChat: (chatId: string) => void;
-};
-
-const AppShellContext = createContext<AppShellContextType | null>(null);
-
-export function useAppShell() {
-  const context = useContext(AppShellContext);
-  if (!context) {
-    throw new Error('useAppShell must be used within an AppShell');
-  }
-  return context;
-}
+import { Terminal } from 'lucide-react';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const [chatKey, setChatKey] = useState(0);
-
-  const newChat = (clear = true) => {
-    if (clear && typeof window !== 'undefined') {
-      const activeId = localStorage.getItem('activeChatId');
-      if (activeId) {
-        localStorage.removeItem(`chatHistory_${activeId}`);
-      }
-      localStorage.removeItem('activeChatId');
-    }
-    setChatKey(prev => prev + 1);
-  };
-  
-  const loadChat = (chatId: string) => {
-    localStorage.setItem('activeChatId', chatId);
-    newChat(false);
-  };
-
   return (
-    <AppShellContext.Provider value={{ newChat, loadChat }}>
-      <div className="flex h-screen w-full bg-secondary/30">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="fixed top-3 left-3 z-10 md:hidden">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle Menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-72 p-0">
-            <Sidebar />
-          </SheetContent>
-        </Sheet>
-
-        <aside className="hidden md:flex md:flex-col w-72 border-r bg-background">
-          <Sidebar />
-        </aside>
-
-        <main className="flex-1 flex flex-col" key={chatKey}>
-          {children}
-        </main>
-      </div>
-    </AppShellContext.Provider>
-  );
-}
-
-function Sidebar() {
-  const { loadChat } = useAppShell();
-  const [chatHistory, setChatHistory] = useState<Record<string, ChatMessage[]>>({});
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-    const loadHistory = () => {
-      const keys = Object.keys(localStorage);
-      const history: Record<string, ChatMessage[]> = {};
-      keys.forEach(key => {
-        if (key.startsWith('chatHistory_')) {
-          const stored = localStorage.getItem(key);
-          if (stored) {
-             history[key.replace('chatHistory_', '')] = JSON.parse(stored);
-          }
-        }
-      });
-      setChatHistory(history);
-      setActiveChatId(localStorage.getItem('activeChatId'));
-    };
-
-    loadHistory();
-    const handleStorageChange = () => {
-        loadHistory();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-        window.removeEventListener('storage', handleStorageChange);
-    };
-}, []);
-
-  const sortedChats = Object.entries(chatHistory).sort((a, b) => {
-    const aLast = a[1][a[1].length-1];
-    const bLast = b[1][b[1].length-1];
-    if (!aLast || !bLast) return 0;
-    return (b[1][0]?.id || 0) > (a[1][0]?.id || 0) ? 1: -1;
-  });
-
-  return (
-    <div className="flex flex-col h-full p-4">
-      <div className="flex items-center justify-center mb-4">
-        <WisdomAI className="h-8 w-8 text-primary" />
-        <span className="text-xl font-semibold ml-2">SageAI</span>
-      </div>
-      <div className="flex-1 mt-4 space-y-1 overflow-y-auto">
-        {isClient && sortedChats.map(([id, messages]) => {
-          if (!messages || messages.length === 0) return null;
-          const firstUserMessage = messages.find(m => m.role === 'user');
-          const title = firstUserMessage ? firstUserMessage.content.substring(0, 30) : 'New Chat';
-          return (
-             <Button
-                key={id}
-                variant={activeChatId === id ? 'secondary' : 'ghost'}
-                className="w-full justify-start gap-2"
-                onClick={() => loadChat(id)}
-             >
-                <MessageSquare className="h-4 w-4" />
-                <span className="truncate">{title}{!firstUserMessage && '...'}</span>
-             </Button>
-          )
-        })}
-      </div>
-      <div className="mt-auto">
-         <div className="flex flex-col items-center justify-center text-center text-xs text-muted-foreground">
-          <span>Developed by</span>
-          <span className="font-semibold">Ali Hassan Wattoo</span>
+    <div className="flex h-screen w-full flex-col bg-background">
+      <header className="flex items-center gap-3 border-b bg-background p-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <Terminal className="h-6 w-6" />
         </div>
-      </div>
+        <h1 className="text-xl font-bold tracking-tight">CodeForge AI</h1>
+      </header>
+
+      <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
   );
 }
