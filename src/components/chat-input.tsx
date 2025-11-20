@@ -125,7 +125,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
                       {...field}
                       disabled={isLoading}
                       autoComplete="off"
-                      className="bg-background border rounded-xl shadow-sm min-h-[52px] resize-none py-3 pl-12 pr-12 text-base"
+                      className="bg-background/80 border rounded-xl shadow-sm min-h-[52px] resize-none py-3 pl-12 pr-12 text-base"
                       onKeyDown={handleKeyDown}
                     />
                   </FormControl>
