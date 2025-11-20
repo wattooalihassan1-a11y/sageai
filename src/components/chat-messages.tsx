@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ScrollArea } from './ui/scroll-area';
 import type { ChatMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { Button } from './ui/button';
+import { Check, Clipboard } from 'lucide-react';
 
 type Props = {
   messages: ChatMessage[];
@@ -14,12 +16,23 @@ type Props = {
 export function ChatMessages({ messages, isLoading }: Props) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
   useEffect(() => {
     setTimeout(() => {
       lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   }, [messages]);
+  
+  const handleCopy = (content: string, id: string) => {
+    // Remove HTML tags for a clean copy
+    const plainText = content.replace(/<br \/>/g, '\n').replace(/<[^>]*>/g, '');
+    navigator.clipboard.writeText(plainText);
+    setCopiedMessageId(id);
+    setTimeout(() => {
+      setCopiedMessageId(null);
+    }, 2000);
+  };
 
   return (
     <ScrollArea className="flex-1" ref={scrollAreaRef}>
@@ -39,10 +52,10 @@ export function ChatMessages({ messages, isLoading }: Props) {
           >
             <div
               className={cn(
-                'max-w-[80%] break-words text-sm',
+                'group relative max-w-[80%] break-words text-sm',
                 {
                   'bg-white text-black rounded-xl p-3 shadow-md': message.role === 'user',
-                  'bg-card': message.role === 'assistant',
+                  'bg-card p-3 rounded-lg': message.role === 'assistant',
                 }
               )}
             >
@@ -60,6 +73,23 @@ export function ChatMessages({ messages, isLoading }: Props) {
               ) : message.content ? (
                 <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
               ) : null}
+
+              {message.role === 'assistant' && !message.isPending && message.content && (
+                <div className='absolute -bottom-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity'>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleCopy(message.content, message.id)}
+                    className="h-8 w-8"
+                  >
+                    {copiedMessageId === message.id ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Clipboard className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         ))}
