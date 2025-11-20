@@ -6,10 +6,10 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Paperclip, Send, Loader2, X } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { ImagePlus, Send, Loader2, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   prompt: z.string(),
@@ -64,80 +64,74 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
   };
 
   return (
-    <div className="p-4 bg-card border-t">
-      {preview && (
-        <div className="relative mb-2 w-24 h-24 rounded-md overflow-hidden">
-          <Image src={preview} alt="Image preview" fill className="object-cover" />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-0 right-0 h-6 w-6 bg-black/50 hover:bg-black/75 text-white"
-            onClick={clearPreview}
+    <div className="p-2 md:p-4 bg-background border-t">
+      <div className={cn("bg-card rounded-xl p-2", preview ? 'mb-2' : '')}>
+        {preview && (
+          <div className="relative mb-2 w-20 h-20 rounded-md overflow-hidden">
+            <Image src={preview} alt="Image preview" fill className="object-cover" />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-0 right-0 h-6 w-6 bg-black/50 hover:bg-black/75 text-white"
+              onClick={clearPreview}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleFormSubmit)}
+            className="flex items-center gap-2"
           >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleFormSubmit)}
-          className="flex items-center gap-2"
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            accept="image/*"
-            disabled={isLoading}
-          />
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isLoading}
-                  type="button"
-                >
-                  <Paperclip className="h-5 w-5" />
-                  <span className="sr-only">Attach file</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Attach an image</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept="image/*"
+              disabled={isLoading}
+            />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading}
+              type="button"
+            >
+              <ImagePlus className="h-5 w-5" />
+              <span className="sr-only">Attach file</span>
+            </Button>
 
-          <FormField
-            control={form.control}
-            name="prompt"
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormControl>
-                  <Input
-                    placeholder={"Ask SageAI anything..."}
-                    {...field}
-                    disabled={isLoading}
-                    autoComplete="off"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="prompt"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormControl>
+                    <Input
+                      placeholder={"Message SageAI..."}
+                      {...field}
+                      disabled={isLoading}
+                      autoComplete="off"
+                      className="bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-          <Button type="submit" size="icon" disabled={isLoading}>
-            {isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Send className="h-5 w-5" />
-            )}
-            <span className="sr-only">Send</span>
-          </Button>
-        </form>
-      </Form>
+            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))}>
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Send className="h-5 w-5" />
+              )}
+              <span className="sr-only">Send</span>
+            </Button>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }

@@ -24,10 +24,10 @@ export function ChatMessages({ messages, isLoading }: Props) {
 
   return (
     <ScrollArea className="flex-1" ref={scrollAreaRef}>
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-4">
         {isLoading && messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
-            <div className="flex items-center justify-center gap-2">
+             <div className="flex items-center justify-center gap-2">
               <span className="h-3 w-3 bg-primary rounded-full animate-pulse [animation-delay:-0.3s]"></span>
               <span className="h-3 w-3 bg-primary rounded-full animate-pulse [animation-delay:-0.15s]"></span>
               <span className="h-3 w-3 bg-primary rounded-full animate-pulse"></span>
@@ -37,7 +37,7 @@ export function ChatMessages({ messages, isLoading }: Props) {
         {messages.map((message, index) => (
           <div
             key={message.id}
-            className={cn('flex items-start gap-4', {
+            className={cn('flex items-start gap-3', {
               'flex-row-reverse': message.role === 'user',
             })}
             ref={index === messages.length - 1 ? lastMessageRef : null}
@@ -45,7 +45,7 @@ export function ChatMessages({ messages, isLoading }: Props) {
             <ChatAvatar message={message} />
             <div
               className={cn(
-                'rounded-lg p-3 max-w-[80%] break-words text-sm',
+                'rounded-xl p-3 max-w-[80%] break-words text-sm shadow-sm',
                 {
                   'bg-primary text-primary-foreground': message.role === 'user',
                   'bg-card': message.role === 'assistant',
@@ -58,7 +58,7 @@ export function ChatMessages({ messages, isLoading }: Props) {
                 </div>
               )}
               {message.isPending ? (
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex items-center justify-center gap-2 p-1">
                   <span className="h-2 w-2 bg-current rounded-full animate-pulse [animation-delay:-0.3s]"></span>
                   <span className="h-2 w-2 bg-current rounded-full animate-pulse [animation-delay:-0.15s]"></span>
                   <span className="h-2 w-2 bg-current rounded-full animate-pulse"></span>

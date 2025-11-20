@@ -4,17 +4,20 @@ import {
   maintainConversationContext,
   type MaintainConversationContextInput,
 } from '@/ai/flows/maintain-conversation-context';
-import type { ConversationHistory } from '@/lib/types';
+import type { ConversationHistory, Settings } from '@/lib/types';
 
 export async function getAiResponse(
   history: ConversationHistory[],
   userInput: string,
+  settings: Settings,
   image?: string
 ) {
   try {
     const input: MaintainConversationContextInput = {
       userInput: userInput,
       conversationHistory: history,
+      persona: settings.persona,
+      language: settings.language,
       image,
     };
     const result = await maintainConversationContext(input);
