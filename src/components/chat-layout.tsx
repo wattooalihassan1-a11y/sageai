@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { getAiResponse } from '@/app/actions';
+import { useState, useRef, useEffect } from 'react';
+import { getAiResponse, getAudioResponse } from '@/app/actions';
 import { ChatInput } from '@/components/chat-input';
 import { ChatMessages } from '@/components/chat-messages';
 import {
@@ -37,19 +37,38 @@ export function ChatLayout() {
     persona: '',
   });
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Initialize Audio element on client
+    if (typeof window !== 'undefined') {
+      audioRef.current = new Audio();
+    }
+  }, []);
+
   const handleSettingsChange = (newSettings: Partial<Settings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const handleSubmit = async (values: { prompt: string; image?: string }) => {
-    if (!values.prompt.trim()) return;
+  const playAudio = (audioDataUri: string) => {
+    if (audioRef.current) {
+      audioRef.current.src = audioDataUri;
+      audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
+    }
+  };
+
+  const handleSubmit = async (values: { prompt: string; image?: string, audio?: string }) => {
+    const { prompt, image, audio } = values;
+    if (!prompt.trim() && !image && !audio) return;
     setIsLoading(true);
+
+    const userMessageContent = prompt || (audio ? '🎤 Audio input' : '');
 
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'user',
-      content: values.prompt,
-      image: values.image,
+      content: userMessageContent,
+      image: image,
     };
     
     const currentMessages = messages[0].id === 'init' ? [] : messages;
@@ -64,35 +83,58 @@ export function ChatLayout() {
     };
     setMessages((prev) => [...prev, pendingMessage]);
 
-    const history = newMessages.map(({ role, content, image }) => ({
+    const history = newMessages.map(({ role, content }) => ({
       role,
       content,
-      image,
     }));
-
+    
+    // Call AI with text, image, and/or audio
     const result = await getAiResponse(
-      history.slice(0, -1), // Exclude user's latest message from history for the call
-      values.prompt,
-      values.image
+      history.slice(0, -1),
+      prompt,
+      image,
+      audio
     );
 
-    setIsLoading(false);
-
     if (result.error) {
+      setIsLoading(false);
       toast({
         variant: 'destructive',
         title: 'Error',
         description: result.error,
       });
-      setMessages((prev) => prev.slice(0, -1)); // Remove pending message
-    } else {
-      const aiMessage: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: result.response,
-      };
-      setMessages((prev) => [...prev.slice(0, -1), aiMessage]);
+      setMessages((prev) => prev.slice(0, -1));
+      return;
     }
+
+    // If audio was sent, update the user message with the transcribed text
+    if (audio && result.transcribedText) {
+      setMessages(prev => prev.map(msg => 
+        msg.id === userMessage.id ? { ...msg, content: result.transcribedText } : msg
+      ));
+    }
+
+    const aiMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: 'assistant',
+      content: result.response,
+    };
+
+    // Generate audio for the AI response
+    const audioResult = await getAudioResponse(result.response);
+    if (audioResult.audio) {
+      aiMessage.audio = audioResult.audio;
+      playAudio(audioResult.audio);
+    } else if (audioResult.error) {
+        toast({
+            variant: 'destructive',
+            title: 'Audio Error',
+            description: audioResult.error,
+        });
+    }
+
+    setIsLoading(false);
+    setMessages((prev) => [...prev.slice(0, -1), aiMessage]);
   };
 
   return (
@@ -109,7 +151,7 @@ export function ChatLayout() {
         <Separator />
         <SidebarContent className="p-2">
           <p className="text-sm font-medium text-muted-foreground p-2">
-            No login required to chat.
+            Start chatting or use the microphone to talk.
           </p>
         </SidebarContent>
         <SidebarSeparator />
@@ -128,7 +170,7 @@ export function ChatLayout() {
             <h1 className="text-lg font-headline font-semibold">SageAI</h1>
           </div>
         </div>
-        <ChatMessages messages={messages} isLoading={false} />
+        <ChatMessages messages={messages} isLoading={false} onPlayAudio={playAudio} />
         <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
       </SidebarInset>
     </SidebarProvider>

@@ -4,6 +4,7 @@ export type ChatMessage = {
   content: string;
   isPending?: boolean;
   image?: string;
+  audio?: string;
 };
 
 export type Settings = {
@@ -14,5 +15,4 @@ export type Settings = {
 export type ConversationHistory = {
   role: 'user' | 'assistant';
   content: string;
-  image?: string;
 };
