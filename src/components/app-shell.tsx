@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 import { MessageCircle, Settings } from 'lucide-react';
 import React, { createContext, useContext, useState } from 'react';
 import { SageAI } from './icons';
+import { Button } from './ui/button';
+import { Plus } from 'lucide-react';
 
 type Tab = 'chat' | 'settings';
 
@@ -43,6 +45,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <SageAI className="h-7 w-7 text-primary" />
             <h1 className="text-xl font-headline font-semibold">SageAI</h1>
           </div>
+          <Button variant="ghost" size="icon" onClick={newChat}>
+            <Plus className="h-5 w-5" />
+          </Button>
         </header>
 
         <main className="flex-1 overflow-y-auto">
@@ -51,12 +56,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </main>
 
-        <footer className="flex justify-around p-2 border-t bg-card">
+        <footer className="flex justify-around p-2 border-t bg-background">
           <button
             onClick={() => setActiveTab('chat')}
             className={cn(
-              'flex flex-col items-center gap-1 p-2 rounded-lg w-24',
-              activeTab === 'chat' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
+              'flex flex-col items-center gap-1 p-2 rounded-lg w-24 transition-colors',
+              activeTab === 'chat' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent/50'
             )}
           >
             <MessageCircle className="h-6 w-6" />
@@ -65,8 +70,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <button
             onClick={() => setActiveTab('settings')}
             className={cn(
-              'flex flex-col items-center gap-1 p-2 rounded-lg w-24',
-              activeTab === 'settings' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
+              'flex flex-col items-center gap-1 p-2 rounded-lg w-24 transition-colors',
+              activeTab === 'settings' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent/50'
             )}
           >
             <Settings className="h-6 w-6" />

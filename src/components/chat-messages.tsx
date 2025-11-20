@@ -24,7 +24,7 @@ export function ChatMessages({ messages, isLoading }: Props) {
 
   return (
     <ScrollArea className="flex-1" ref={scrollAreaRef}>
-      <div className="p-4 md:p-6 space-y-4">
+      <div className="p-4 md:p-6 space-y-6">
         {isLoading && messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
              <div className="flex items-center justify-center gap-2">
@@ -45,10 +45,10 @@ export function ChatMessages({ messages, isLoading }: Props) {
             <ChatAvatar message={message} />
             <div
               className={cn(
-                'rounded-xl p-3 max-w-[80%] break-words text-sm shadow-sm',
+                'rounded-xl p-3 max-w-[80%] break-words text-sm',
                 {
                   'bg-primary text-primary-foreground': message.role === 'user',
-                  'bg-card': message.role === 'assistant',
+                  'bg-card border': message.role === 'assistant',
                 }
               )}
             >

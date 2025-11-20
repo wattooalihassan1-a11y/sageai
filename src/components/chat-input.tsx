@@ -64,10 +64,10 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
   };
 
   return (
-    <div className="px-2 pb-2 md:px-4 md:pb-4 pt-2 bg-background border-t">
-      <div className={cn("bg-card rounded-xl p-2", preview ? 'mb-2' : '')}>
+    <div className="px-2 pb-2 md:px-4 md:pb-4 pt-2 bg-background">
+      <div className={cn("bg-card rounded-xl p-1 border shadow-sm", preview ? 'mb-2' : '')}>
         {preview && (
-          <div className="relative mb-2 w-20 h-20 rounded-md overflow-hidden">
+          <div className="m-1 relative w-20 h-20 rounded-md overflow-hidden">
             <Image src={preview} alt="Image preview" fill className="object-cover" />
             <Button
               variant="ghost"
@@ -82,7 +82,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleFormSubmit)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-1"
           >
             <input
               type="file"
@@ -99,7 +99,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
               disabled={isLoading}
               type="button"
             >
-              <ImagePlus className="h-5 w-5" />
+              <ImagePlus className="h-5 w-5 text-muted-foreground" />
               <span className="sr-only">Attach file</span>
             </Button>
 
@@ -121,7 +121,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
               )}
             />
 
-            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))}>
+            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="bg-primary hover:bg-primary/90">
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
