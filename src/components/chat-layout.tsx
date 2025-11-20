@@ -28,7 +28,7 @@ import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { LogIn, LogOut, MessageSquare, Plus } from 'lucide-react';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { addDoc, collection, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
 
 const initialMessages: ChatMessage[] = [
   {
@@ -110,12 +110,12 @@ export function ChatLayout() {
   
     let currentChatId = activeChatId;
   
-    // Create a new chat session if it's the first message
     if (!currentChatId) {
       try {
         const chatRef = await addDoc(collection(firestore, 'users', user.uid, 'chats'), {
           title: values.prompt.substring(0, 30),
           createdAt: serverTimestamp(),
+          userId: user.uid,
         });
         currentChatId = chatRef.id;
         setActiveChatId(currentChatId);
@@ -149,13 +149,13 @@ export function ChatLayout() {
       ({ role, content, image }) => ({ role, content, image })
     );
   
-    // Add user message to Firestore
     if (currentChatId) {
         await addDoc(collection(firestore, 'users', user.uid, 'chats', currentChatId, 'messages'), {
             role: 'user',
             content: values.prompt,
             image: values.image || null,
             createdAt: serverTimestamp(),
+            userId: user.uid,
         });
     }
 
@@ -175,7 +175,7 @@ export function ChatLayout() {
         title: 'Error',
         description: result.error,
       });
-      setMessages((prev) => prev.slice(0, -1)); // Remove pending message
+      setMessages((prev) => prev.slice(0, -1));
     } else {
       const aiMessage: ChatMessage = {
         id: crypto.randomUUID(),
@@ -183,28 +183,52 @@ export function ChatLayout() {
         content: result.response,
       };
       setMessages((prev) => [...prev.slice(0, -1), aiMessage]);
-      // Add AI message to Firestore
+
       if (currentChatId) {
         await addDoc(collection(firestore, 'users', user.uid, 'chats', currentChatId, 'messages'), {
             role: 'assistant',
             content: result.response,
             createdAt: serverTimestamp(),
+            userId: user.uid,
         });
       }
     }
   };
 
   const handleLogin = async () => {
-    if (!auth) return;
+    if (!auth || !firestore) return;
     try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
-    } catch (error) {
+      const result = await signInWithPopup(auth, new GoogleAuthProvider());
+      const { user } = result;
+
+      // Create user document in Firestore if it doesn't exist
+      const userRef = doc(firestore, "users", user.uid);
+      await setDoc(userRef, { 
+        id: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL
+      }, { merge: true });
+
+    } catch (error: any) {
       console.error(error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to sign in with Google.',
-      });
+      if (error.code === 'auth/popup-closed-by-user') {
+          return;
+      }
+      if (error.code === 'auth/configuration-not-found') {
+          toast({
+            variant: 'destructive',
+            title: 'Authentication Error',
+            description: 'Google Sign-In is not enabled for this project. Please enable it in the Firebase console.',
+            duration: 10000,
+          });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to sign in with Google.',
+        });
+      }
     }
   };
 
