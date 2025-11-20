@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils';
 import { Menu, MessageSquare, Plus, Settings2 } from 'lucide-react';
 import React, { createContext, useContext, useState } from 'react';
-import { SageAI } from './icons';
+import { WisdomAI } from './icons';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 
@@ -75,7 +75,7 @@ function Sidebar() {
       </div>
       <div className="mt-auto">
          <div className="flex flex-col items-center justify-center text-center text-xs text-muted-foreground">
-          <SageAI className="h-6 w-6 mb-1" />
+          <WisdomAI className="h-6 w-6 mb-1" />
         </div>
       </div>
     </div>

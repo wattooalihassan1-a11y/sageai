@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { AppShell } from '@/components/app-shell';
 
 export const metadata: Metadata = {
-  title: 'SageAI',
+  title: 'Wisdom AI',
   description: 'An intelligent chat assistant.',
 };
 

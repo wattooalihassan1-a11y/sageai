@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import type { ChatMessage } from "@/lib/types";
-import { SageAI } from "./icons";
+import { WisdomAI } from "./icons";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Image from "next/image";
 
@@ -10,7 +10,7 @@ type Props = {
 };
 
 export function ChatAvatar({ message }: Props) {
-  const assistantAvatar = PlaceHolderImages.find(p => p.id === 'sage-ai-logo');
+  const assistantAvatar = PlaceHolderImages.find(p => p.id === 'wisdom-ai-logo');
 
   if (message.role === "user") {
     return (
@@ -36,7 +36,7 @@ export function ChatAvatar({ message }: Props) {
           </div>
       ) : (
         <AvatarFallback>
-            <SageAI className="h-5 w-5 text-primary" />
+            <WisdomAI className="h-5 w-5 text-primary" />
         </AvatarFallback>
       )}
     </Avatar>

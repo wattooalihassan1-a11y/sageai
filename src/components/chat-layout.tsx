@@ -26,13 +26,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
-import { SageAI } from './icons';
+import { WisdomAI } from './icons';
 
 const initialMessages: ChatMessage[] = [
   {
     id: 'init',
     role: 'assistant',
-    content: "Assalamu alaikum! I'm SageAI. How can I assist you today?",
+    content: "Assalamu alaikum! I'm Wisdom AI. How can I assist you today?",
   },
 ];
 
@@ -59,31 +59,39 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { newChat } = useAppShell();
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
+    setIsClient(true)
+  }, [])
+  
+  useEffect(() => {
+    if (!isClient) return;
     try {
       const storedMessages = localStorage.getItem('chatHistory');
       if (storedMessages) {
-        setMessages(JSON.parse(storedMessages));
+        const parsedMessages = JSON.parse(storedMessages);
+        if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
+           setMessages(parsedMessages);
+        }
       }
     } catch (error) {
       console.error("Failed to parse chat history from localStorage", error);
     }
-  }, []);
+  }, [isClient]);
 
   useEffect(() => {
+    if (!isClient) return;
     try {
-      if (typeof window !== 'undefined') {
         if (messages.length > 1 || (messages.length === 1 && messages[0].id !== 'init')) {
           localStorage.setItem('chatHistory', JSON.stringify(messages));
         } else {
            localStorage.removeItem('chatHistory');
         }
-      }
     } catch (error) {
       console.error("Failed to save chat history to localStorage", error);
     }
-  }, [messages]);
+  }, [messages, isClient]);
   
   const handleNewChat = () => {
     setMessages(initialMessages);
@@ -150,7 +158,7 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
       <header className="grid grid-cols-3 items-center p-4 border-b">
         <div className="w-10"></div>
         <div className="flex items-baseline justify-center text-center gap-2">
-            <h1 className="text-xl font-semibold">SageAI</h1>
+            <h1 className="text-xl font-semibold">Wisdom AI</h1>
             <span className="text-xs text-muted-foreground">by Ali Hassan Wattoo</span>
         </div>
         <div className="flex justify-end">

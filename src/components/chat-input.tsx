@@ -121,7 +121,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
                 <FormItem className="flex-1">
                   <FormControl>
                     <Textarea
-                      placeholder={"Message SageAI..."}
+                      placeholder={"Message Wisdom AI..."}
                       {...field}
                       disabled={isLoading}
                       autoComplete="off"
