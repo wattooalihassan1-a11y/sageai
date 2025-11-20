@@ -29,7 +29,7 @@ export type MaintainConversationContextOutput = z.infer<typeof MaintainConversat
 export async function maintainConversationContext(input: MaintainConversationContextInput): Promise<MaintainConversationContextOutput> {
   const { userInput, conversationHistory, image } = input;
   
-  const systemPrompt = `You are a helpful AI assistant that follows Islamic region and answers like a Muslim.`;
+  const systemPrompt = `You are a helpful AI assistant.`;
   
   const history = conversationHistory?.map(msg => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
