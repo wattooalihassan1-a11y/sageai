@@ -29,9 +29,19 @@ import {
 
 const initialMessages: ChatMessage[] = [
   {
-    id: 'init',
+    id: 'init-1',
     role: 'assistant',
-    content: "Assalamu alaikum! I'm SageAI. How can I assist you today?",
+    content: 'Hello!',
+  },
+  {
+    id: 'init-2',
+    role: 'assistant',
+    content: "I'm SageAI, your personal AI assistant.",
+  },
+  {
+    id: 'init-3',
+    role: 'assistant',
+    content: 'How can I help you today?',
   },
 ];
 
@@ -95,7 +105,8 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
   useEffect(() => {
     if (!isClient || !activeChatId) return;
     try {
-        if (messages.length > 1 || (messages.length === 1 && messages[0].id !== 'init')) {
+        const isInitial = messages.every(m => m.id.startsWith('init-'));
+        if (!isInitial) {
           localStorage.setItem(`chatHistory_${activeChatId}`, JSON.stringify(messages));
         } else {
            localStorage.removeItem(`chatHistory_${activeChatId}`);
@@ -118,7 +129,7 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
       image: image,
     };
 
-    const currentMessages = messages[0].id === 'init' ? [] : messages;
+    const currentMessages = messages[0]?.id.startsWith('init-') ? [] : messages;
     const newMessages = [...currentMessages, userMessage];
     setMessages(newMessages);
 
