@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User } from "lucide-react";
 import type { ChatMessage } from "@/lib/types";
 import { WisdomAI } from "./icons";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -13,10 +12,12 @@ export function ChatAvatar({ message }: Props) {
   const assistantAvatar = PlaceHolderImages.find(p => p.id === 'wisdom-ai-logo');
 
   if (message.role === "user") {
+    // A real app would get user info from auth
+    const userName = "User"; 
     return (
-      <Avatar className="h-8 w-8 bg-secondary text-secondary-foreground">
-        <AvatarFallback>
-          <User className="h-5 w-5" />
+      <Avatar className="h-8 w-8 bg-primary text-primary-foreground">
+        <AvatarFallback className="bg-primary text-primary-foreground">
+          {userName.charAt(0)}
         </AvatarFallback>
       </Avatar>
     );

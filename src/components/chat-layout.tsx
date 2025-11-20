@@ -26,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
-import { WisdomAI } from './icons';
 
 const initialMessages: ChatMessage[] = [
   {
@@ -55,11 +54,12 @@ type Props = {
 };
 
 export function ChatLayout({ settings, onSettingsChange }: Props) {
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { newChat } = useAppShell();
   const [isClient, setIsClient] = useState(false)
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true)
@@ -68,35 +68,40 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
   useEffect(() => {
     if (!isClient) return;
     try {
-      const storedMessages = localStorage.getItem('chatHistory');
+      const chatId = localStorage.getItem('activeChatId') || `chat_${Date.now()}`;
+      setActiveChatId(chatId);
+      localStorage.setItem('activeChatId', chatId);
+
+      const storedMessages = localStorage.getItem(`chatHistory_${chatId}`);
       if (storedMessages) {
         const parsedMessages = JSON.parse(storedMessages);
         if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
            setMessages(parsedMessages);
+        } else {
+            setMessages(initialMessages);
         }
+      } else {
+        setMessages(initialMessages);
       }
     } catch (error) {
       console.error("Failed to parse chat history from localStorage", error);
+       setMessages(initialMessages);
     }
   }, [isClient]);
 
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || !activeChatId) return;
     try {
         if (messages.length > 1 || (messages.length === 1 && messages[0].id !== 'init')) {
-          localStorage.setItem('chatHistory', JSON.stringify(messages));
+          localStorage.setItem(`chatHistory_${activeChatId}`, JSON.stringify(messages));
         } else {
-           localStorage.removeItem('chatHistory');
+           localStorage.removeItem(`chatHistory_${activeChatId}`);
         }
+        window.dispatchEvent(new Event('storage'));
     } catch (error) {
       console.error("Failed to save chat history to localStorage", error);
     }
-  }, [messages, isClient]);
-  
-  const handleNewChat = () => {
-    setMessages(initialMessages);
-    newChat();
-  };
+  }, [messages, isClient, activeChatId]);
 
   const handleSubmit = async (values: { prompt: string; image?: string }) => {
     const { prompt, image } = values;

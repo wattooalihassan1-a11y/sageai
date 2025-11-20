@@ -102,42 +102,44 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
               accept="image/*"
               disabled={isLoading}
             />
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isLoading}
-              type="button"
-              className='absolute left-2 bottom-2'
-            >
-              <ImagePlus className="h-5 w-5 text-muted-foreground" />
-              <span className="sr-only">Attach file</span>
-            </Button>
-
+            
             <FormField
               control={form.control}
               name="prompt"
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormControl>
-                    <Textarea
-                      placeholder={"Message Wisdom AI..."}
-                      {...field}
-                      disabled={isLoading}
-                      autoComplete="off"
-                      className="bg-background/80 border rounded-xl shadow-sm min-h-[52px] resize-none py-3 pl-12 pr-12 text-base"
-                      onKeyDown={handleKeyDown}
-                    />
+                    <div className="relative flex items-center w-full">
+                       <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={isLoading}
+                          type="button"
+                          className='absolute left-2'
+                        >
+                          <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                          <span className="sr-only">Attach file</span>
+                        </Button>
+                        <Textarea
+                          placeholder={"Message Wisdom AI..."}
+                          {...field}
+                          disabled={isLoading}
+                          autoComplete="off"
+                          className="bg-accent border-border rounded-full shadow-sm min-h-[52px] resize-none py-3 pl-12 pr-4 text-base"
+                          onKeyDown={handleKeyDown}
+                        />
+                    </div>
                   </FormControl>
                 </FormItem>
               )}
             />
 
-            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="absolute right-2 bottom-2 h-8 w-8">
+            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="h-12 w-12 shrink-0 rounded-full">
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                <Send className="h-4 w-4" />
+                <Send className="h-5 w-5" />
               )}
               <span className="sr-only">Send</span>
             </Button>

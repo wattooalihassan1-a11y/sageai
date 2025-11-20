@@ -5,6 +5,7 @@ import { ScrollArea } from './ui/scroll-area';
 import type { ChatMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { ChatAvatar } from './chat-avatar';
 
 type Props = {
   messages: ChatMessage[];
@@ -36,17 +37,18 @@ export function ChatMessages({ messages, isLoading }: Props) {
         {messages.map((message, index) => (
           <div
             key={message.id}
-            className={cn('flex items-start gap-4', {
+            className={cn('flex items-end gap-3', {
               'justify-end': message.role === 'user',
             })}
             ref={index === messages.length - 1 ? lastMessageRef : null}
           >
+            {message.role === 'assistant' && <ChatAvatar message={message} />}
             <div
               className={cn(
-                'rounded-xl p-3 max-w-[80%] break-words text-sm',
+                'rounded-2xl p-3 max-w-[80%] break-words text-sm',
                 {
-                  'bg-white text-black border': message.role === 'user',
-                  'bg-muted': message.role === 'assistant',
+                  'bg-primary text-primary-foreground rounded-br-none': message.role === 'user',
+                  'bg-muted rounded-bl-none': message.role === 'assistant',
                 }
               )}
             >
@@ -65,6 +67,7 @@ export function ChatMessages({ messages, isLoading }: Props) {
                 <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
               ) : null}
             </div>
+             {message.role === 'user' && <ChatAvatar message={message} />}
           </div>
         ))}
       </div>
