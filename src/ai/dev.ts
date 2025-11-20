@@ -1,3 +1,4 @@
+'use server';
 import { config } from 'dotenv';
 config();
 
@@ -5,3 +6,4 @@ import '@/ai/flows/generate-response.ts';
 import '@/ai/flows/maintain-conversation-context.ts';
 import '@/ai/flows/respond-in-multiple-languages.ts';
 import '@/ai/flows/generate-picture.ts';
+import '@/ai/flows/analyze-problem.ts';

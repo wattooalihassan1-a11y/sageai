@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -12,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Chat } from '@/components/chat';
+import { Analyze } from '@/components/analyze';
 
 const tabs = [
   { name: 'Solve', icon: Sparkles },
@@ -44,7 +44,7 @@ export function CodeForge() {
 
       <div className="rounded-xl border bg-card p-6 shadow-sm min-h-[600px]">
         {activeTab === 'Solve' && <Chat />}
-        {activeTab === 'Analyze' && <ComingSoon name="Analyze" />}
+        {activeTab === 'Analyze' && <Analyze />}
         {activeTab === 'Simplify' && <ComingSoon name="Simplify" />}
         {activeTab === 'Explain' && <ComingSoon name="Explain" />}
       </div>

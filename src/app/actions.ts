@@ -8,6 +8,11 @@ import {
   maintainConversationContext,
   type MaintainConversationContextInput,
 } from '@/ai/flows/maintain-conversation-context';
+import {
+  analyzeProblem,
+  type AnalyzeProblemInput,
+  type AnalyzeProblemOutput,
+} from '@/ai/flows/analyze-problem';
 import type { ConversationHistory, Settings } from '@/lib/types';
 
 export async function getAiResponse(
@@ -36,5 +41,18 @@ export async function getAiResponse(
   } catch (error: any) {
     console.error('Error getting AI response:', error);
     return { error: 'Sorry, I encountered an error. Please try again.' };
+  }
+}
+
+export async function getProblemAnalysis(
+  problem: string
+): Promise<{ analysis?: AnalyzeProblemOutput; error?: string }> {
+  try {
+    const input: AnalyzeProblemInput = { problem };
+    const analysis = await analyzeProblem(input);
+    return { analysis };
+  } catch (error: any) {
+    console.error('Error analyzing problem:', error);
+    return { error: 'Sorry, I encountered an error during analysis. Please try again.' };
   }
 }
