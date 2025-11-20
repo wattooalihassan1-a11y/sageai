@@ -113,14 +113,6 @@ function Sidebar() {
 
   return (
     <div className="flex flex-col h-full bg-background p-4">
-      <Button
-        onClick={() => newChat()}
-        className="w-full justify-start gap-2"
-        variant="outline"
-      >
-        <Plus className="h-4 w-4" />
-        New Chat
-      </Button>
       <div className="flex-1 mt-4 space-y-1 overflow-y-auto">
         {sortedChats.map(([id, messages]) => {
           if (!messages || messages.length === 0) return null;
@@ -142,6 +134,7 @@ function Sidebar() {
       <div className="mt-auto">
          <div className="flex flex-col items-center justify-center text-center text-xs text-muted-foreground">
           <WisdomAI className="h-6 w-6 mb-1" />
+          <span>by Ali Hassan Wattoo</span>
         </div>
       </div>
     </div>
