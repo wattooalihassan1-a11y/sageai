@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from './ui/button';
-import { Settings2, Languages, User } from 'lucide-react';
+import { Settings2, Languages, User, Plus } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import {
@@ -86,22 +86,27 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
       setMessages(initialMessages);
       return;
     }
-    // Start a new chat on app load
-    localStorage.removeItem('activeChatId');
-    const allKeys = Object.keys(localStorage);
-    allKeys.forEach(key => {
-      if (key.startsWith('chatHistory_')) {
-        localStorage.removeItem(key);
-      }
-    });
-    
-    const chatId = `chat_${Date.now()}`;
-    setActiveChatId(chatId);
-    localStorage.setItem('activeChatId', chatId);
-    setMessages(initialMessages);
-    window.dispatchEvent(new Event('storage'));
+    const currentChatId = localStorage.getItem('activeChatId');
+    if (currentChatId) {
+        const stored = localStorage.getItem(`chatHistory_${currentChatId}`);
+        if(stored) {
+            setMessages(JSON.parse(stored));
+            setActiveChatId(currentChatId);
+        } else {
+             startNewChat();
+        }
+    } else {
+        startNewChat();
+    }
 
-
+    function startNewChat() {
+        const chatId = `chat_${Date.now()}`;
+        setActiveChatId(chatId);
+        localStorage.setItem('activeChatId', chatId);
+        setMessages(initialMessages);
+        localStorage.setItem(`chatHistory_${chatId}`, JSON.stringify(initialMessages));
+        window.dispatchEvent(new Event('storage'));
+    }
   }, [isClient]);
 
   useEffect(() => {
@@ -110,8 +115,6 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
         const isInitial = messages.every(m => m.id.startsWith('init-'));
         if (!isInitial) {
           localStorage.setItem(`chatHistory_${activeChatId}`, JSON.stringify(messages));
-        } else {
-           localStorage.removeItem(`chatHistory_${activeChatId}`);
         }
         window.dispatchEvent(new Event('storage'));
     } catch (error) {
@@ -175,11 +178,15 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
   };
 
   return (
-    <div className="relative flex flex-col h-full">
+    <div className="relative flex flex-col h-full bg-background rounded-2xl m-4 border">
       <header className="flex items-center p-4 border-b">
-        <div className="flex-1"></div>
+        <div className="flex-1">
+            <Button variant="ghost" onClick={() => newChat(true)}>
+                <Plus /> New Chat
+            </Button>
+        </div>
         <div className="flex-1 flex justify-center text-center">
-            <h1 className="text-xl font-semibold">SageAI</h1>
+            <h1 className="text-xl font-semibold"></h1>
         </div>
         <div className="flex-1 flex justify-end">
           <SettingsMenu settings={settings} onSettingsChange={onSettingsChange} />
@@ -187,7 +194,9 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
       </header>
 
       <ChatMessages messages={messages} isLoading={isLoading} />
-      <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
+      <div className='p-4'>
+        <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
+      </div>
     </div>
   );
 }

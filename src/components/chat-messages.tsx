@@ -5,7 +5,6 @@ import { ScrollArea } from './ui/scroll-area';
 import type { ChatMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { ChatAvatar } from './chat-avatar';
 
 type Props = {
   messages: ChatMessage[];
@@ -40,10 +39,10 @@ export function ChatMessages({ messages, isLoading }: Props) {
           >
             <div
               className={cn(
-                'rounded-xl p-3 max-w-[80%] break-words text-sm',
+                'rounded-xl p-3 max-w-[80%] break-words text-sm shadow-md',
                 {
                   'bg-primary text-primary-foreground': message.role === 'user',
-                  'bg-muted': message.role === 'assistant',
+                  'bg-card': message.role === 'assistant',
                 }
               )}
             >

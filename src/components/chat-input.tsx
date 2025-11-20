@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { ImagePlus, Send, Loader2, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   prompt: z.string(),
@@ -72,10 +71,10 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
 
 
   return (
-    <div className="px-4 pb-4 w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-3xl mx-auto">
        <div className="relative">
         {preview && (
-            <div className="absolute bottom-full left-0 mb-2 p-2 bg-background border rounded-lg">
+            <div className="absolute bottom-full left-0 mb-2 p-2 bg-background border rounded-lg shadow-lg">
               <div className="relative w-20 h-20 rounded-md overflow-hidden">
                 <Image src={preview} alt="Image preview" fill className="object-cover" />
                 <Button
@@ -116,7 +115,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
                           onClick={() => fileInputRef.current?.click()}
                           disabled={isLoading}
                           type="button"
-                          className='absolute left-2'
+                          className='absolute left-2 top-1/2 -translate-y-1/2'
                         >
                           <ImagePlus className="h-5 w-5 text-muted-foreground" />
                           <span className="sr-only">Attach file</span>
@@ -126,7 +125,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
                         {...field}
                         disabled={isLoading}
                         onKeyDown={handleKeyDown}
-                        className="min-h-[52px] resize-none pl-12 pr-16 py-3"
+                        className="min-h-[52px] resize-none pl-14 pr-16 py-3 bg-secondary/50 rounded-full focus:ring-2 focus:ring-primary"
                       />
                     </div>
                   </FormControl>
@@ -134,7 +133,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
               )}
             />
 
-            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="absolute right-2 top-1/2 -translate-y-1/2">
+            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full">
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (

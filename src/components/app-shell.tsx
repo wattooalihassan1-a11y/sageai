@@ -44,7 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AppShellContext.Provider value={{ newChat, loadChat }}>
-      <div className="flex h-screen w-full">
+      <div className="flex h-screen w-full bg-secondary/30">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="fixed top-3 left-3 z-10 md:hidden">
@@ -57,7 +57,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </SheetContent>
         </Sheet>
 
-        <aside className="hidden md:flex md:flex-col w-72 border-r">
+        <aside className="hidden md:flex md:flex-col w-72 border-r bg-background">
           <Sidebar />
         </aside>
 
@@ -107,14 +107,15 @@ function Sidebar() {
     const aLast = a[1][a[1].length-1];
     const bLast = b[1][b[1].length-1];
     if (!aLast || !bLast) return 0;
-    // Assuming messages have a timestamp property, otherwise use id.
-    // For this example, we'll assume new chats are added and have recent messages.
-    // A more robust implementation would use timestamps.
     return (b[1][0]?.id || 0) > (a[1][0]?.id || 0) ? 1: -1;
   });
 
   return (
-    <div className="flex flex-col h-full bg-background p-4">
+    <div className="flex flex-col h-full p-4">
+      <div className="flex items-center justify-center mb-4">
+        <WisdomAI className="h-8 w-8 text-primary" />
+        <span className="text-xl font-semibold ml-2">SageAI</span>
+      </div>
       <div className="flex-1 mt-4 space-y-1 overflow-y-auto">
         {isClient && sortedChats.map(([id, messages]) => {
           if (!messages || messages.length === 0) return null;
@@ -135,8 +136,8 @@ function Sidebar() {
       </div>
       <div className="mt-auto">
          <div className="flex flex-col items-center justify-center text-center text-xs text-muted-foreground">
-          <WisdomAI className="h-6 w-6 mb-1" />
-          <span>by Ali Hassan Wattoo</span>
+          <span>Developed by</span>
+          <span className="font-semibold">Ali Hassan Wattoo</span>
         </div>
       </div>
     </div>
