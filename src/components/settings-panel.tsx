@@ -11,6 +11,8 @@ import {
 } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Separator } from './ui/separator';
+import { SageAI } from './icons';
 
 const languages = [
   'English',
@@ -71,6 +73,13 @@ export function SettingsPanel({ settings, onSettingsChange }: Props) {
         </CardContent>
       </Card>
 
+      <div className="pt-8">
+        <div className="flex flex-col items-center justify-center text-center text-muted-foreground">
+          <SageAI className="h-8 w-8 mb-2" />
+          <p className="text-sm">Developed by</p>
+          <p className="font-semibold text-foreground">Ali Hassan Wattoo</p>
+        </div>
+      </div>
     </div>
   );
 }
