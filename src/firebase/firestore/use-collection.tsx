@@ -9,7 +9,7 @@ import {
   DocumentData,
   QuerySnapshot,
 } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 
 export function useCollection(queryRef: Query<DocumentData> | null) {
   const [data, setData] = useState<DocumentData[] | null>(null);

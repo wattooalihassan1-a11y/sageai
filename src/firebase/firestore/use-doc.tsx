@@ -7,7 +7,7 @@ import {
   DocumentReference,
   DocumentData,
 } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 
 export function useDoc(docRef: DocumentReference<DocumentData> | null) {
   const [data, setData] = useState<DocumentData | null>(null);

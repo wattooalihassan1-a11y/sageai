@@ -4,7 +4,8 @@ import { FirebaseApp } from 'firebase/app';
 import { Auth } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { initializeFirebase, FirebaseProvider, useFirebaseApp } from '@/firebase';
+import { initializeFirebase } from '@/firebase/index';
+import { FirebaseProvider } from '@/firebase/provider';
 
 export function FirebaseClientProvider({
   children,
