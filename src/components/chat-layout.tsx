@@ -123,7 +123,7 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
   return (
     <div className="relative flex flex-col h-full">
       <header className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col">
             <h1 className="text-xl font-semibold">SageAI</h1>
             <span className="text-sm text-muted-foreground">by Ali Hassan Wattoo</span>
         </div>
