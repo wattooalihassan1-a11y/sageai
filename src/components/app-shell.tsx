@@ -69,10 +69,6 @@ function Sidebar() {
       </Button>
       <div className="flex-1 mt-4 space-y-2 overflow-y-auto">
         {/* Chat history will go here */}
-        <div className="flex items-center gap-2 p-2 rounded-lg text-sm text-muted-foreground hover:bg-accent cursor-pointer">
-          <MessageSquare className="h-4 w-4" />
-          <span className="truncate">Example conversation</span>
-        </div>
       </div>
       <div className="mt-auto">
          <div className="flex flex-col items-center justify-center text-center text-xs text-muted-foreground">
