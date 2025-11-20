@@ -70,7 +70,7 @@ export function ChatLayout() {
     }));
 
     const result = await getAiResponse(
-      history,
+      history.slice(0, -1), // Exclude user's latest message from history for the call
       values.prompt,
       settings.language,
       settings.persona,
