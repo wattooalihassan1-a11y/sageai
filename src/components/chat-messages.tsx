@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react';
 import { ScrollArea } from './ui/scroll-area';
 import type { ChatMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { ChatAvatar } from './chat-avatar';
 import Image from 'next/image';
 
 type Props = {
@@ -37,15 +36,16 @@ export function ChatMessages({ messages, isLoading }: Props) {
         {messages.map((message, index) => (
           <div
             key={message.id}
-            className={cn('flex items-start gap-4')}
+            className={cn('flex items-start gap-4', {
+              'justify-end': message.role === 'user',
+            })}
             ref={index === messages.length - 1 ? lastMessageRef : null}
           >
-            <ChatAvatar message={message} />
             <div
               className={cn(
                 'rounded-xl p-3 max-w-[80%] break-words text-sm',
                 {
-                  'bg-transparent': message.role === 'user',
+                  'bg-primary text-primary-foreground': message.role === 'user',
                   'bg-muted': message.role === 'assistant',
                 }
               )}
