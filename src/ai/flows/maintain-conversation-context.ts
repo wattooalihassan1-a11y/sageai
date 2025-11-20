@@ -28,39 +28,25 @@ const MaintainConversationContextOutputSchema = z.object({
 export type MaintainConversationContextOutput = z.infer<typeof MaintainConversationContextOutputSchema>;
 
 export async function maintainConversationContext(input: MaintainConversationContextInput): Promise<MaintainConversationContextOutput> {
-  return maintainConversationContextFlow(input);
-}
+  const { userInput, conversationHistory, image } = input;
 
-const prompt = ai.definePrompt({
-  name: 'maintainConversationContextPrompt',
-  input: {schema: MaintainConversationContextInputSchema},
-  output: {schema: MaintainConversationContextOutputSchema},
-  prompt: `You are a helpful AI assistant. Respond to the user input while maintaining context from the conversation history.
+  let prompt = `You are a helpful AI assistant. Please respond to the following prompt:\n\nUser: ${userInput}`;
 
-{% if conversationHistory %}
-Conversation History:
-  {% each conversationHistory %}
-    {{this.role}}: {{this.content}}
-  {% endeach %}
-{% endif %}
-
-User Input: {{userInput}}
-{% if image %}
-Image:
-{{media url=image}}
-{% endif %}
-
-Assistant: `,
-});
-
-const maintainConversationContextFlow = ai.defineFlow(
-  {
-    name: 'maintainConversationContextFlow',
-    inputSchema: MaintainConversationContextInputSchema,
-    outputSchema: MaintainConversationContextOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  if (conversationHistory && conversationHistory.length > 0) {
+    const historyText = conversationHistory
+      .map(msg => `${msg.role}: ${msg.content}`)
+      .join('\n');
+    prompt = `You are a helpful AI assistant. Continue the conversation based on the history.\n\n${historyText}\nUser: ${userInput}`;
   }
-);
+  
+  const promptParts = [{ text: prompt }];
+  if (image) {
+    promptParts.push({ media: { url: image } });
+  }
+
+  const result = await ai.generate({
+    prompt: promptParts as any, // Cast to any to handle prompt structure
+  });
+
+  return { response: result.text };
+}
