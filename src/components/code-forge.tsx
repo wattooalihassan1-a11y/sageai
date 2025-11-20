@@ -1,7 +1,7 @@
+
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import {
   Sparkles,
   Lightbulb,
@@ -9,9 +9,9 @@ import {
   MessageSquareQuote,
   BrainCircuit,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Textarea } from './ui/textarea';
-import { Label } from './ui/label';
+import { Chat } from '@/components/chat';
 
 const tabs = [
   { name: 'Solve', icon: Sparkles },
@@ -42,8 +42,8 @@ export function CodeForge() {
         ))}
       </div>
 
-      <div className="rounded-xl border bg-card p-6 shadow-sm">
-        {activeTab === 'Solve' && <SolveProblem />}
+      <div className="rounded-xl border bg-card p-6 shadow-sm min-h-[600px]">
+        {activeTab === 'Solve' && <Chat />}
         {activeTab === 'Analyze' && <ComingSoon name="Analyze" />}
         {activeTab === 'Simplify' && <ComingSoon name="Simplify" />}
         {activeTab === 'Explain' && <ComingSoon name="Explain" />}
@@ -52,35 +52,9 @@ export function CodeForge() {
   );
 }
 
-function SolveProblem() {
-  return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-3">
-        <Sparkles className="h-6 w-6 text-primary" />
-        <h2 className="text-2xl font-bold">Solve a Problem</h2>
-      </div>
-      <p className="text-muted-foreground">
-        Describe any problem, question, or puzzle, and let the AI find a solution for you.
-      </p>
-
-      <div className="grid w-full gap-2">
-        <Label htmlFor="problem-description" className="font-semibold">Describe your problem</Label>
-        <Textarea
-          id="problem-description"
-          placeholder="e.g., How can I calculate the total return on an investment with compounding interest?"
-          className="min-h-[120px] bg-background"
-          rows={5}
-        />
-      </div>
-      
-      <Button className="mt-4 w-full sm:w-auto self-start">Solve</Button>
-    </div>
-  );
-}
-
 function ComingSoon({ name }: { name: string }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 text-center h-60">
+    <div className="flex flex-col items-center justify-center gap-4 text-center h-full">
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
         <BrainCircuit className="h-6 w-6 text-primary" />
       </div>
