@@ -38,7 +38,6 @@ export function ChatMessages({ messages, isLoading }: Props) {
             })}
             ref={index === messages.length - 1 ? lastMessageRef : null}
           >
-            {message.role === 'assistant' && <ChatAvatar message={message} />}
             <div
               className={cn(
                 'rounded-xl p-3 max-w-[80%] break-words text-sm',
