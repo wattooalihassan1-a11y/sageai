@@ -43,6 +43,12 @@ const initialMessages: ChatMessage[] = [
     role: 'assistant',
     content: 'How can I help you today?',
   },
+  {
+    id: 'init-4',
+    role: 'assistant',
+    content:
+      'Here are a few things I can help with:\n- Answering questions\n- Writing and debugging code\n- Composing emails and essays\n- Translating languages\n- And much more!',
+  },
 ];
 
 const languages = [
