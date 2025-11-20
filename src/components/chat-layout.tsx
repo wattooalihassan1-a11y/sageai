@@ -309,14 +309,7 @@ export function ChatLayout() {
               </Button>
             </div>
           ) : (
-            <div className='p-2 flex flex-col gap-2'>
-              <Button onClick={handleLogin}>
-                <LogIn /> Login with Google
-              </Button>
-              <Button variant="secondary" onClick={() => setShowSignUp(true)}>
-                <UserPlus /> Create an Account
-              </Button>
-            </div>
+            null
           )}
           <Separator />
           <SettingsPanel
