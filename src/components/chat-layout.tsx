@@ -79,6 +79,7 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
 
   useEffect(() => {
     setIsClient(true)
+    localStorage.removeItem('activeChatId');
   }, [])
   
   useEffect(() => {
@@ -179,20 +180,6 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
 
   return (
     <div className="relative flex flex-col h-full bg-background rounded-2xl m-4 border">
-      <header className="flex items-center p-4 border-b">
-        <div className="flex-1">
-            <Button variant="ghost" onClick={() => newChat(true)}>
-                <Plus /> New Chat
-            </Button>
-        </div>
-        <div className="flex-1 flex justify-center text-center">
-            <h1 className="text-xl font-semibold"></h1>
-        </div>
-        <div className="flex-1 flex justify-end">
-          <SettingsMenu settings={settings} onSettingsChange={onSettingsChange} />
-        </div>
-      </header>
-
       <ChatMessages messages={messages} isLoading={isLoading} />
       <div className='p-4'>
         <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
