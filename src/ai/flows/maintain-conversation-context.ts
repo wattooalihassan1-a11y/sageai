@@ -23,7 +23,7 @@ export type MaintainConversationContextOutput = z.infer<typeof MaintainConversat
 export async function maintainConversationContext(input: MaintainConversationContextInput): Promise<MaintainConversationContextOutput> {
   const { userInput, conversationHistory, image, persona, language } = input;
   
-  const systemPrompt = `${persona || 'You are a helpful AI assistant.'} Please respond in ${language || 'English'}.`;
+  const systemPrompt = `${persona || 'You are a helpful AI assistant.'} Your primary instruction is to respond in the same language as the user's input. If a language is specified in the settings, use that. Otherwise, automatically detect and match the user's language. The user has selected '${language || 'not specified'}' as their preferred language.`;
   
   const history = conversationHistory?.map(msg => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
