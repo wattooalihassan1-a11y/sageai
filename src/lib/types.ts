@@ -4,7 +4,6 @@ export type ChatMessage = {
   content: string;
   isPending?: boolean;
   image?: string;
-  audio?: string;
 };
 
 export type Settings = {

@@ -6,16 +6,13 @@ import type { ChatMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { ChatAvatar } from './chat-avatar';
 import Image from 'next/image';
-import { Button } from './ui/button';
-import { Volume2 } from 'lucide-react';
 
 type Props = {
   messages: ChatMessage[];
   isLoading: boolean;
-  onPlayAudio?: (audioDataUri: string) => void;
 };
 
-export function ChatMessages({ messages, isLoading, onPlayAudio }: Props) {
+export function ChatMessages({ messages, isLoading }: Props) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
@@ -68,16 +65,6 @@ export function ChatMessages({ messages, isLoading, onPlayAudio }: Props) {
                 </div>
               ) : (
                 <div className="prose prose-sm dark:prose-invert" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
-              )}
-              {message.audio && onPlayAudio && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="mt-2 h-8 w-8"
-                  onClick={() => onPlayAudio(message.audio!)}
-                >
-                  <Volume2 className="h-4 w-4" />
-                </Button>
               )}
             </div>
           </div>
