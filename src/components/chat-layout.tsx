@@ -85,27 +85,23 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
     if (!isClient) {
       setMessages(initialMessages);
       return;
-    };
-    try {
-      const chatId = localStorage.getItem('activeChatId') || `chat_${Date.now()}`;
-      setActiveChatId(chatId);
-      localStorage.setItem('activeChatId', chatId);
-
-      const storedMessages = localStorage.getItem(`chatHistory_${chatId}`);
-      if (storedMessages) {
-        const parsedMessages = JSON.parse(storedMessages);
-        if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
-           setMessages(parsedMessages);
-        } else {
-            setMessages(initialMessages);
-        }
-      } else {
-        setMessages(initialMessages);
-      }
-    } catch (error) {
-      console.error("Failed to parse chat history from localStorage", error);
-       setMessages(initialMessages);
     }
+    // Start a new chat on app load
+    localStorage.removeItem('activeChatId');
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach(key => {
+      if (key.startsWith('chatHistory_')) {
+        localStorage.removeItem(key);
+      }
+    });
+    
+    const chatId = `chat_${Date.now()}`;
+    setActiveChatId(chatId);
+    localStorage.setItem('activeChatId', chatId);
+    setMessages(initialMessages);
+    window.dispatchEvent(new Event('storage'));
+
+
   }, [isClient]);
 
   useEffect(() => {
