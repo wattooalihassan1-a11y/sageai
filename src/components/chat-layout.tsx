@@ -113,7 +113,8 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
     const aiMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'assistant',
-      content: result.response,
+      content: result.response || '',
+      image: result.image,
     };
 
     setMessages((prev) => [...prev.slice(0, -1), aiMessage]);

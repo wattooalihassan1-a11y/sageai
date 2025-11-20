@@ -1,6 +1,10 @@
 'use server';
 
 import {
+  generatePicture,
+  type GeneratePictureInput,
+} from '@/ai/flows/generate-picture';
+import {
   maintainConversationContext,
   type MaintainConversationContextInput,
 } from '@/ai/flows/maintain-conversation-context';
@@ -13,6 +17,13 @@ export async function getAiResponse(
   image?: string
 ) {
   try {
+    if (userInput.startsWith('/imagine ')) {
+      const prompt = userInput.replace('/imagine ', '');
+      const input: GeneratePictureInput = { prompt };
+      const result = await generatePicture(input);
+      return { image: result.imageUrl };
+    }
+
     const input: MaintainConversationContextInput = {
       userInput: userInput,
       conversationHistory: history,

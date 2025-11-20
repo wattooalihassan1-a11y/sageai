@@ -61,9 +61,9 @@ export function ChatMessages({ messages, isLoading }: Props) {
                   <span className="h-2 w-2 bg-current rounded-full animate-pulse [animation-delay:-0.15s]"></span>
                   <span className="h-2 w-2 bg-current rounded-full animate-pulse"></span>
                 </div>
-              ) : (
+              ) : message.content ? (
                 <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
-              )}
+              ) : null}
             </div>
           </div>
         ))}
