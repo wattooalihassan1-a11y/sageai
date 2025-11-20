@@ -133,11 +133,11 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
               )}
             />
 
-            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="absolute right-2 bottom-2 h-8 w-8 bg-primary hover:bg-primary/90">
+            <Button type="submit" size="icon" disabled={isLoading || (!form.getValues('prompt') && !form.getValues('image'))} className="absolute right-2 bottom-2 h-8 w-8 bg-white hover:bg-gray-100 border">
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
               ) : (
-                <Send className="h-4 w-4" />
+                <Send className="h-4 w-4 text-primary" />
               )}
               <span className="sr-only">Send</span>
             </Button>
