@@ -1,59 +1,19 @@
-/**
- * Firestore Security Rules for the SageAI Application.
- *
- * Core Philosophy:
- * This ruleset enforces a strict user-ownership model. All user-generated data,
- * including conversations, messages, and images, is stored in subcollections
- * under that user's specific document. This ensures that users can only ever
- * access their own data, providing strong privacy and security by default.
- *
- * Data Structure:
- * The data is organized hierarchically, with all user-specific content nested
- * under the `/users/{userId}` path. This path-based ownership is the primary
- * mechanism for authorization, making the rules simple, fast, and easy to audit.
- * - /users/{userId} (User Profile)
- *   - /chats/{chatId} (User's conversation)
- *     - /messages/{messageId} (Messages within the conversation)
- *
- * Key Security Decisions:
- * - Strict Ownership: A user can only read, write, or delete documents within
- *   their own data tree (i.e., where the `{userId}` in the path matches their
- *   authenticated UID).
- * - No Public Listing: There are no publicly listable collections. Specifically,
- *   listing the top-level `/users` collection is implicitly denied.
- * - Path-Based Authorization: Rules rely on the `{userId}` wildcard in the path
- *   for authorization, which is highly performant as it avoids extra database reads.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper Functions
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
     function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
+      return request.auth != null && request.auth.uid == userId;
     }
 
-    // /users/{userId}
     match /users/{userId} {
-      allow get, delete: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isOwner(userId) && request.resource.data.id == resource.data.id;
-      
-      // /users/{userId}/chats/{chatId}
-      match /chats/{chatId} {
-        allow list, get, delete: if isOwner(userId);
-        allow create: if isOwner(userId) && request.resource.data.userId == userId;
-        allow update: if isOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow read, write: if isOwner(userId);
 
-        // /users/{userId}/chats/{chatId}/messages/{messageId}
+      match /chats/{chatId} {
+        allow read, write: if isOwner(userId);
+
         match /messages/{messageId} {
-          allow list, get, delete: if isOwner(userId);
-          allow create: if isOwner(userId) && request.resource.data.userId == userId;
-          allow update: if isOwner(userId) && request.resource.data.userId == resource.data.userId;
+          allow read, write: if isOwner(userId);
         }
       }
     }
