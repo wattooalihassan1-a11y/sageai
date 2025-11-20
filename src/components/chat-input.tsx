@@ -64,7 +64,7 @@ export function ChatInput({ onSubmit, isLoading }: Props) {
   };
 
   return (
-    <div className="p-2 md:p-4 bg-background border-t">
+    <div className="px-2 pb-2 md:px-4 md:pb-4 pt-2 bg-background border-t">
       <div className={cn("bg-card rounded-xl p-2", preview ? 'mb-2' : '')}>
         {preview && (
           <div className="relative mb-2 w-20 h-20 rounded-md overflow-hidden">
