@@ -180,6 +180,16 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
 
   return (
     <div className="relative flex flex-col h-full bg-background rounded-2xl m-4 border">
+      <header className="flex items-center justify-between p-4 border-b">
+        <h1 className="text-xl font-semibold">SageAI</h1>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={() => newChat()}>
+            <Plus className="h-5 w-5" />
+            <span className="sr-only">New Chat</span>
+          </Button>
+          <SettingsMenu settings={settings} onSettingsChange={onSettingsChange} />
+        </div>
+      </header>
       <ChatMessages messages={messages} isLoading={isLoading} />
       <div className='p-4'>
         <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
