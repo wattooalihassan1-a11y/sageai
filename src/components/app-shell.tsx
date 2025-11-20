@@ -77,8 +77,6 @@ function Sidebar() {
       <div className="mt-auto">
          <div className="flex flex-col items-center justify-center text-center text-xs text-muted-foreground">
           <SageAI className="h-6 w-6 mb-1" />
-          <p>Developed by</p>
-          <p className="font-semibold text-foreground/80">Ali Hassan Wattoo</p>
         </div>
       </div>
     </div>
