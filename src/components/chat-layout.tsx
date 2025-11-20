@@ -55,29 +55,28 @@ type Props = {
 };
 
 export function ChatLayout({ settings, onSettingsChange }: Props) {
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        const storedMessages = localStorage.getItem('chatHistory');
-        if (storedMessages) {
-          return JSON.parse(storedMessages);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to parse chat history from localStorage", error);
-    }
-    return initialMessages;
-  });
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { newChat } = useAppShell();
 
   useEffect(() => {
     try {
+      const storedMessages = localStorage.getItem('chatHistory');
+      if (storedMessages) {
+        setMessages(JSON.parse(storedMessages));
+      }
+    } catch (error) {
+      console.error("Failed to parse chat history from localStorage", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
       if (typeof window !== 'undefined') {
-        if (messages.length > 0 && messages[0].id !== 'init') {
+        if (messages.length > 1 || (messages.length === 1 && messages[0].id !== 'init')) {
           localStorage.setItem('chatHistory', JSON.stringify(messages));
-        } else if (messages.length === 0 || (messages.length === 1 && messages[0].id === 'init')) {
+        } else {
            localStorage.removeItem('chatHistory');
         }
       }
