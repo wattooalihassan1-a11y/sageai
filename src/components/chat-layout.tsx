@@ -152,7 +152,7 @@ export function ChatLayout({ settings, onSettingsChange }: Props) {
         <div className="w-10"></div>
         <div className="flex items-baseline justify-center text-center gap-2">
             <h1 className="text-xl font-semibold">SageAI</h1>
-            <span className="text-sm text-muted-foreground">by Ali Hassan Wattoo</span>
+            <span className="text-xs text-muted-foreground">by Ali Hassan Wattoo</span>
         </div>
         <div className="flex justify-end">
           <SettingsMenu settings={settings} onSettingsChange={onSettingsChange} />
