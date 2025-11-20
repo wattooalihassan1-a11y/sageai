@@ -4,8 +4,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { AppShell } from '@/components/app-shell';
 
 export const metadata: Metadata = {
-  title: 'CodeForge AI',
-  description: 'An intelligent code assistant.',
+  title: 'Problem Solver AI',
+  description: 'An intelligent problem-solving assistant.',
 };
 
 export default function RootLayout({

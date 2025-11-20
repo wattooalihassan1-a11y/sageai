@@ -7,28 +7,21 @@ import {
   Lightbulb,
   Combine,
   MessageSquareQuote,
-  Terminal,
+  BrainCircuit,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select';
 
 const tabs = [
-  { name: 'Generate', icon: Sparkles },
-  { name: 'Improve', icon: Lightbulb },
-  { name: 'Convert', icon: Combine },
+  { name: 'Solve', icon: Sparkles },
+  { name: 'Analyze', icon: Lightbulb },
+  { name: 'Simplify', icon: Combine },
   { name: 'Explain', icon: MessageSquareQuote },
 ];
 
 export function CodeForge() {
-  const [activeTab, setActiveTab] = useState('Generate');
+  const [activeTab, setActiveTab] = useState('Solve');
 
   return (
     <div className="flex flex-col gap-4">
@@ -50,53 +43,37 @@ export function CodeForge() {
       </div>
 
       <div className="rounded-xl border bg-card p-6 shadow-sm">
-        {activeTab === 'Generate' && <GenerateCode />}
-        {activeTab === 'Improve' && <ComingSoon name="Improve" />}
-        {activeTab === 'Convert' && <ComingSoon name="Convert" />}
+        {activeTab === 'Solve' && <SolveProblem />}
+        {activeTab === 'Analyze' && <ComingSoon name="Analyze" />}
+        {activeTab === 'Simplify' && <ComingSoon name="Simplify" />}
         {activeTab === 'Explain' && <ComingSoon name="Explain" />}
       </div>
     </div>
   );
 }
 
-function GenerateCode() {
+function SolveProblem() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
         <Sparkles className="h-6 w-6 text-primary" />
-        <h2 className="text-2xl font-bold">Generate Code</h2>
+        <h2 className="text-2xl font-bold">Solve a Problem</h2>
       </div>
       <p className="text-muted-foreground">
-        Describe the feature or function you want, and let the AI bring it to life in your chosen language.
+        Describe any problem, question, or puzzle, and let the AI find a solution for you.
       </p>
 
       <div className="grid w-full gap-2">
-        <Label htmlFor="code-description" className="font-semibold">Code Description</Label>
+        <Label htmlFor="problem-description" className="font-semibold">Describe your problem</Label>
         <Textarea
-          id="code-description"
-          placeholder="e.g., A Python function that takes a list of integers and returns the sum of all even numbers."
+          id="problem-description"
+          placeholder="e.g., How can I calculate the total return on an investment with compounding interest?"
           className="min-h-[120px] bg-background"
           rows={5}
         />
       </div>
-
-      <div className="grid w-full max-w-sm items-center gap-2">
-        <Label htmlFor="language" className="font-semibold">Programming Language</Label>
-        <Select defaultValue="typescript">
-          <SelectTrigger id="language">
-            <SelectValue placeholder="Select language" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="typescript">TypeScript</SelectItem>
-            <SelectItem value="python">Python</SelectItem>
-            <SelectItem value="javascript">JavaScript</SelectItem>
-            <SelectItem value="java">Java</SelectItem>
-            <SelectItem value="go">Go</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
       
-      <Button className="mt-4 w-full sm:w-auto self-start">Generate</Button>
+      <Button className="mt-4 w-full sm:w-auto self-start">Solve</Button>
     </div>
   );
 }
@@ -105,7 +82,7 @@ function ComingSoon({ name }: { name: string }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 text-center h-60">
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-        <Terminal className="h-6 w-6 text-primary" />
+        <BrainCircuit className="h-6 w-6 text-primary" />
       </div>
       <h3 className="text-xl font-bold">{name} is coming soon!</h3>
       <p className="text-muted-foreground">This feature is under development. Please check back later.</p>
