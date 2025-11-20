@@ -39,7 +39,7 @@ export function ChatMessages({ messages, isLoading }: Props) {
           >
             <div
               className={cn(
-                'rounded-xl p-3 max-w-[80%] break-words text-sm shadow-md',
+                'max-w-[80%] break-words text-sm',
                 {
                   'bg-white text-black': message.role === 'user',
                   'bg-card': message.role === 'assistant',
