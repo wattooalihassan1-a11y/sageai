@@ -87,12 +87,6 @@ export function ChatLayout({ settings }: { settings: Settings }) {
     <div className="relative flex flex-col h-full">
       <ChatMessages messages={messages} isLoading={isLoading} />
       <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
-       <Button 
-        onClick={handleNewChat}
-        className="absolute bottom-24 right-4 h-14 w-14 rounded-full shadow-lg"
-      >
-        <Plus className="h-6 w-6" />
-      </Button>
     </div>
   );
 }
