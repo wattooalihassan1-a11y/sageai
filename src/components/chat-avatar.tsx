@@ -19,9 +19,9 @@ export function ChatAvatar({ message }: Props) {
   }
 
   return (
-    <Avatar className="h-8 w-8 bg-primary text-primary-foreground">
+    <Avatar className="h-8 w-8 bg-background">
       <AvatarFallback>
-        <SageAI className="h-5 w-5" />
+        <SageAI className="h-5 w-5 text-primary" />
       </AvatarFallback>
     </Avatar>
   );
