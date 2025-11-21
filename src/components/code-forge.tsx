@@ -14,7 +14,7 @@ import { Analyze } from '@/components/analyze';
 import { Explain } from '@/components/explain';
 import { Summarize } from '@/components/summarize';
 import { GetIdea } from '@/components/get-idea';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 const capabilities = [
   { name: 'Solve', icon: Sparkles, component: <Chat /> },
@@ -29,21 +29,22 @@ export function CodeForge() {
 
   return (
     <div className="flex flex-col gap-4">
-      <ScrollArea className="w-full whitespace-nowrap rounded-lg">
-        <div className="flex w-max space-x-2 pb-2">
-            {capabilities.map((capability) => (
-              <Button
-                key={capability.name}
-                variant={activeCapability.name === capability.name ? 'default' : 'outline'}
-                className="h-9 px-3 rounded-lg font-semibold text-xs"
-                onClick={() => setActiveCapability(capability)}
-              >
-                <capability.icon className="mr-2 h-4 w-4" />
-                {capability.name}
-              </Button>
-            ))}
-        </div>
-      </ScrollArea>
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+        {capabilities.map((capability) => (
+          <Button
+            key={capability.name}
+            variant={activeCapability.name === capability.name ? 'default' : 'outline'}
+            className={cn(
+              "flex flex-col items-center justify-center h-20 w-full p-2 gap-1",
+              "text-xs font-semibold leading-tight text-center"
+            )}
+            onClick={() => setActiveCapability(capability)}
+          >
+            <capability.icon className="h-5 w-5 mb-1" />
+            <span>{capability.name}</span>
+          </Button>
+        ))}
+      </div>
 
       <div className="rounded-xl border bg-card p-6 shadow-sm min-h-[600px]">
         {activeCapability.component}
