@@ -35,6 +35,7 @@ export function Chat({ onViewChange }: ChatProps) {
   });
   const [image, setImage] = useState<string | undefined>(undefined);
   const [isRecording, setIsRecording] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -52,8 +53,8 @@ export function Chat({ onViewChange }: ChatProps) {
 
   const handleSubmit = useCallback(async (e?: React.FormEvent, voiceInput?: string) => {
     e?.preventDefault();
-    if (isRecording) {
-      recognitionRef.current?.stop();
+    if (recognitionRef.current && isRecording) {
+      recognitionRef.current.stop();
     }
     const currentInput = voiceInput || input;
     if ((!currentInput.trim() && !image) || isPending) return;
@@ -155,6 +156,15 @@ export function Chat({ onViewChange }: ChatProps) {
     }
     setIsRecording(!isRecording);
   };
+  
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if(isRecording) {
+      recognitionRef.current?.stop();
+    } else {
+      handleSubmit();
+    }
+  };
 
   return (
     <>
@@ -203,12 +213,18 @@ export function Chat({ onViewChange }: ChatProps) {
               </Button>
             </div>
           )}
-          <form onSubmit={handleSubmit} className="relative flex items-start gap-2">
+          <form 
+            onSubmit={handleFormSubmit} 
+            className={cn(
+              "relative flex w-full items-start gap-2 rounded-xl border bg-background pr-2 shadow-sm transition-all",
+              isFocused ? "ring-2 ring-primary ring-offset-2" : ""
+            )}
+          >
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               size="icon"
-              className="shrink-0"
+              className="shrink-0 ml-1"
               onClick={() => fileInputRef.current?.click()}
               disabled={isPending}
             >
@@ -236,29 +252,34 @@ export function Chat({ onViewChange }: ChatProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={isRecording ? "Listening..." : "Message Clarity AI..."}
-              className="min-h-[40px] flex-1 resize-none bg-background"
+              className="min-h-[40px] flex-1 resize-none border-0 bg-transparent px-0 py-2 focus-visible:ring-0"
               rows={1}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
-                  handleSubmit(e);
+                  e.preventDefault();
+                  handleFormSubmit(e);
                 }
               }}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               disabled={isPending || isRecording}
               autoFocus
             />
-            <Button
-                type="button"
-                variant={isRecording ? "destructive" : "outline"}
-                size="icon"
-                className="shrink-0"
-                onClick={handleVoiceRecording}
-                disabled={isPending}
-            >
-                <Mic size={18} />
-            </Button>
-            <Button type="submit" disabled={(!input.trim() && !image) || isPending} size="icon">
-                <Send size={18} />
-            </Button>
+            <div className='flex items-center self-center'>
+              <Button
+                  type="button"
+                  variant={isRecording ? "destructive" : "ghost"}
+                  size="icon"
+                  className="shrink-0"
+                  onClick={handleVoiceRecording}
+                  disabled={isPending}
+              >
+                  <Mic size={18} />
+              </Button>
+              <Button type="submit" disabled={(!input.trim() && !image) || isPending} size="icon">
+                  <Send size={18} />
+              </Button>
+            </div>
           </form>
         </div>
       </div>
@@ -373,3 +394,5 @@ function ChatMessage({ message }: ChatMessageProps) {
     </div>
   );
 }
+
+    
