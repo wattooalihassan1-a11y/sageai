@@ -58,7 +58,7 @@ export function CodeForge() {
         ))}
       </div>
 
-      <div className="rounded-xl border bg-card p-6 shadow-sm min-h-[600px]">
+      <div className="rounded-xl border bg-card p-4 sm:p-6 shadow-sm">
         {React.cloneElement(activeCapability.component, { 
           key: activeCapability.name,
           onViewChange: handleViewChange,
