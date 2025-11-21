@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import type { Settings } from '@/lib/types';
 
 interface ChatSettingsProps {
@@ -25,18 +24,7 @@ interface ChatSettingsProps {
   onSettingsChange: (settings: Settings) => void;
 }
 
-const languages = [
-  'English',
-  'Spanish',
-  'French',
-  'German',
-  'Chinese',
-  'Japanese',
-  'Korean',
-  'Urdu',
-  'Arabic',
-  'Russian',
-];
+const languages = ['English', 'Urdu'];
 
 const personas = [
   'Helpful Assistant',
