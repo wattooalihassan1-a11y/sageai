@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Brain, AlertTriangle, Wand } from 'lucide-react';
+import { Brain, AlertTriangle, Wand, ClipboardCopy } from 'lucide-react';
 import { getIdeaAction } from '@/app/actions';
 import type { GetIdeaOutput } from '@/ai/flows/get-idea';
 import { Skeleton } from './ui/skeleton';
-import { Card, CardContent } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { useToast } from '@/hooks/use-toast';
 
 export function GetIdea() {
   const [topic, setTopic] = useState('');
@@ -71,9 +72,26 @@ export function GetIdea() {
 }
 
 function IdeaResult({ result }: { result: GetIdeaOutput }) {
+    const { toast } = useToast();
+
+    const handleCopy = () => {
+        const textToCopy = result.ideas.map(idea => `- ${idea}`).join('\n');
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            toast({
+                description: 'Ideas copied to clipboard!',
+            });
+        });
+    };
+
     return (
         <Card className="animate-fade-in-slide-up">
-            <CardContent className="pt-6 space-y-3">
+            <CardHeader className="flex-row items-center justify-between">
+                <CardTitle>Generated Ideas</CardTitle>
+                <Button variant="ghost" size="icon" onClick={handleCopy}>
+                    <ClipboardCopy />
+                </Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
                  <ul className="list-disc list-inside pl-4 space-y-2 text-muted-foreground">
                     {result.ideas.map((item, i) => <li key={i}>{item}</li>)}
                 </ul>
