@@ -9,7 +9,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
           <BrainCircuit className="h-6 w-6" />
         </div>
-        <h1 className="text-xl font-bold tracking-tight">Clarity AI</h1>
+        <div className="flex items-baseline gap-2">
+          <h1 className="text-xl font-bold tracking-tight">Clarity AI</h1>
+          <span className="text-sm text-muted-foreground">
+            by NextGenDeveloper Ali Hassan
+          </span>
+        </div>
       </header>
 
       <main className="flex-1 overflow-y-auto">{children}</main>
