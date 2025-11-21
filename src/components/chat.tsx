@@ -71,28 +71,30 @@ export function Chat() {
     setImage(undefined);
     setIsPending(true);
 
-    const history = messages.map(({ role, content }) => ({ role, content }));
-    
-    const result = await getAiResponse(history, input, settings, image);
+    try {
+      const history = messages.map(({ role, content }) => ({ role, content }));
+      
+      const result = await getAiResponse(history, input, settings, image);
 
-    if (result.error) {
-        const errorMessage: ChatMessageType = {
-            id: uuidv4(),
-            role: 'assistant',
-            content: result.error,
-        };
-        setMessages((prev) => [...prev, errorMessage]);
-    } else {
-        const assistantMessage: ChatMessageType = {
-            id: uuidv4(),
-            role: 'assistant',
-            content: result.response || '',
-            image: result.image,
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
+      if (result.error) {
+          const errorMessage: ChatMessageType = {
+              id: uuidv4(),
+              role: 'assistant',
+              content: result.error,
+          };
+          setMessages((prev) => [...prev, errorMessage]);
+      } else {
+          const assistantMessage: ChatMessageType = {
+              id: uuidv4(),
+              role: 'assistant',
+              content: result.response || '',
+              image: result.image,
+          };
+          setMessages((prev) => [...prev, assistantMessage]);
+      }
+    } finally {
+        setIsPending(false);
     }
-
-    setIsPending(false);
   };
 
   return (
