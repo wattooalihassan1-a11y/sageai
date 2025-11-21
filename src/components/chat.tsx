@@ -52,6 +52,10 @@ export function Chat({ onViewChange }: ChatProps) {
 
   const handleSubmit = useCallback(async (e?: React.FormEvent, voiceInput?: string) => {
     e?.preventDefault();
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      return;
+    }
     const currentInput = voiceInput || input;
     if ((!currentInput.trim() && !image) || isPending) return;
 
@@ -97,7 +101,7 @@ export function Chat({ onViewChange }: ChatProps) {
     } finally {
         setIsPending(false);
     }
-  }, [input, image, isPending, messages, settings, onViewChange]);
+  }, [input, image, isPending, messages, settings, onViewChange, isRecording]);
 
   useEffect(() => {
     scrollToBottom();
@@ -253,7 +257,7 @@ export function Chat({ onViewChange }: ChatProps) {
             >
                 <Mic size={18} />
             </Button>
-            <Button type="submit" disabled={(!input.trim() && !image) || isPending} size="icon">
+            <Button type="submit" disabled={(!input.trim() && !image && !isRecording) || isPending} size="icon">
               <Send size={18} />
             </Button>
           </form>
