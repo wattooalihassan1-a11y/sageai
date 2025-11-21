@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy } from 'lucide-react';
+import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy, Paperclip, X } from 'lucide-react';
 import type { ChatMessage as ChatMessageType, Settings } from '@/lib/types';
 import { getAiResponse } from '@/app/actions';
 import { cn } from '@/lib/utils';
@@ -29,7 +29,9 @@ export function Chat() {
     language: 'English',
     persona: 'Helpful Assistant',
   });
+  const [image, setImage] = useState<string | undefined>(undefined);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const scrollToBottom = useCallback(() => {
@@ -41,23 +43,37 @@ export function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
+  
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isPending) return;
+    if ((!input.trim() && !image) || isPending) return;
 
     const userMessage: ChatMessageType = {
       id: uuidv4(),
       role: 'user',
       content: input,
+      image: image,
     };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
+    setImage(undefined);
     setIsPending(true);
 
     const history = messages.map(({ role, content }) => ({ role, content }));
     
-    const result = await getAiResponse(history, input, settings);
+    const result = await getAiResponse(history, input, settings, image);
 
     if (result.error) {
         const errorMessage: ChatMessageType = {
@@ -112,25 +128,57 @@ export function Chat() {
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-6 flex items-start gap-2">
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Message Clarity AI..."
-            className="min-h-[40px] flex-1 resize-none bg-background"
-            rows={1}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                handleSubmit(e);
-              }
-            }}
-            disabled={isPending}
-            autoFocus
-          />
-          <Button type="submit" disabled={!input.trim() || isPending} size="icon">
-            <Send size={18} />
-          </Button>
-        </form>
+        <div className="mt-6">
+          {image && (
+            <div className="relative w-24 h-24 mb-2 rounded-md overflow-hidden">
+              <img src={image} alt="Selected" className="w-full h-full object-cover" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-0 right-0 h-6 w-6 bg-black/50 hover:bg-black/75 text-white"
+                onClick={() => setImage(undefined)}
+              >
+                <X size={14} />
+              </Button>
+            </div>
+          )}
+          <form onSubmit={handleSubmit} className="flex items-start gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="shrink-0"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isPending}
+            >
+              <Paperclip size={18} />
+            </Button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Message Clarity AI..."
+              className="min-h-[40px] flex-1 resize-none bg-background"
+              rows={1}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  handleSubmit(e);
+                }
+              }}
+              disabled={isPending}
+              autoFocus
+            />
+            <Button type="submit" disabled={(!input.trim() && !image) || isPending} size="icon">
+              <Send size={18} />
+            </Button>
+          </form>
+        </div>
       </div>
       <ChatSettings 
         open={isSettingsOpen}
@@ -152,11 +200,13 @@ function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === 'user';
   
   const handleCopy = () => {
-    navigator.clipboard.writeText(message.content).then(() => {
-      toast({
-        description: 'Copied to clipboard!',
+    if (message.content) {
+      navigator.clipboard.writeText(message.content).then(() => {
+        toast({
+          description: 'Copied to clipboard!',
+        });
       });
-    });
+    }
   };
 
   return (
@@ -179,14 +229,15 @@ function ChatMessage({ message }: ChatMessageProps) {
             : 'bg-muted'
         )}
       >
-        {message.image ? (
-          <img src={message.image} alt="Generated image" className="rounded-lg mb-2" />
-        ) : (
+        {message.image && (
+          <img src={message.image} alt="Generated content" className="rounded-lg mb-2 max-w-full" />
+        )}
+        {message.content && (
           <div className="prose prose-sm dark:prose-invert max-w-none">
             <Markdown>{message.content}</Markdown>
           </div>
         )}
-        {!isUser && !message.image && (
+        {!isUser && message.content && (
            <Button
             variant="ghost"
             size="icon"
