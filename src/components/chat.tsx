@@ -200,7 +200,7 @@ export function Chat({ onViewChange }: ChatProps) {
               </Button>
             </div>
           )}
-          <form onSubmit={handleSubmit} className="flex items-start gap-2">
+          <form onSubmit={handleSubmit} className="relative flex items-start gap-2">
             <Button
               type="button"
               variant="outline"
@@ -218,6 +218,17 @@ export function Chat({ onViewChange }: ChatProps) {
               accept="image/*"
               onChange={handleImageChange}
             />
+            {isRecording && (
+                <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-md z-10">
+                    <div className="flex items-center gap-1.5">
+                        <span className="h-4 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.3s]"></span>
+                        <span className="h-6 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.15s]"></span>
+                        <span className="h-5 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary"></span>
+                        <span className="h-6 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.15s]"></span>
+                        <span className="h-4 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.3s]"></span>
+                    </div>
+                </div>
+            )}
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
