@@ -104,7 +104,10 @@ export function Chat({ onViewChange }: ChatProps) {
   }, [input, image, isPending, messages, settings, onViewChange, isRecording]);
 
   useEffect(() => {
-    scrollToBottom();
+    // Only scroll to bottom if there are more than the initial messages or if pending
+    if (messages.length > initialMessages.length || isPending) {
+        scrollToBottom();
+    }
   }, [messages, isPending, scrollToBottom]);
   
   useEffect(() => {
@@ -236,7 +239,7 @@ export function Chat({ onViewChange }: ChatProps) {
                         <span className="h-6 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.15s]"></span>
                         <span className="h-5 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary"></span>
                         <span className="h-6 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.15s]"></span>
-                        <span className="h-4 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.3s]"></span>
+                        <span className="h-4 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:--0.3s]"></span>
                     </div>
                     <Button type="button" variant="ghost" size="icon" onClick={() => handleStopRecording(true)}>
                         <Check className='text-green-500' />
