@@ -247,19 +247,27 @@ export function Chat({ onViewChange }: ChatProps) {
               disabled={isPending || isRecording}
               autoFocus
             />
-            <Button
-                type="button"
-                variant={isRecording ? 'destructive' : 'outline'}
-                size="icon"
-                className="shrink-0"
-                onClick={handleVoiceRecording}
-                disabled={isPending}
-            >
-                <Mic size={18} />
-            </Button>
-            <Button type="submit" disabled={(!input.trim() && !image && !isRecording) || isPending} size="icon">
-              <Send size={18} />
-            </Button>
+            {isRecording ? (
+                <Button type="submit" size="icon" variant="destructive">
+                    <Send size={18} />
+                </Button>
+            ) : (
+                <>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="shrink-0"
+                        onClick={handleVoiceRecording}
+                        disabled={isPending}
+                    >
+                        <Mic size={18} />
+                    </Button>
+                    <Button type="submit" disabled={(!input.trim() && !image) || isPending} size="icon">
+                        <Send size={18} />
+                    </Button>
+                </>
+            )}
           </form>
         </div>
       </div>
@@ -374,3 +382,5 @@ function ChatMessage({ message }: ChatMessageProps) {
     </div>
   );
 }
+
+    
