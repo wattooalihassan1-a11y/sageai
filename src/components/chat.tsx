@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Send, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Speaker, Mic, Trash2, Check } from 'lucide-react';
 import type { ChatMessage as ChatMessageType, Settings, View } from '@/lib/types';
-import { getAiResponse } from '@/app/actions';
+import { getAiResponse, textToSpeech as generateSpeech } from '@/app/actions';
 import { cn } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
 import Markdown from 'react-markdown';
@@ -59,8 +59,9 @@ export function Chat({ onViewChange }: ChatProps) {
     const currentInput = voiceInput || input;
     if ((!currentInput.trim() && !image) || isPending) return;
 
+    const userMessageId = uuidv4();
     const userMessage: ChatMessageType = {
-      id: uuidv4(),
+      id: userMessageId,
       role: 'user',
       content: currentInput,
       image: image,
@@ -69,6 +70,16 @@ export function Chat({ onViewChange }: ChatProps) {
     setInput('');
     setImage(undefined);
     setIsPending(true);
+
+    // Generate audio for user message
+    if (currentInput.trim()) {
+        generateSpeech({ text: currentInput }).then(result => {
+            setMessages(prev => prev.map(msg => 
+                msg.id === userMessageId ? { ...msg, audio: result.audioUrl } : msg
+            ));
+        }).catch(err => console.error("Error generating user speech:", err));
+    }
+
 
     try {
       const history = messages.slice(-5).map(({ role, content }) => ({ role, content }));
@@ -391,8 +402,11 @@ function ChatMessage({ message }: ChatMessageProps) {
             <Markdown>{message.content}</Markdown>
           </div>
         )}
-        <div className="absolute -bottom-2 -right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-            {!isUser && message.audio && (
+        <div className={cn(
+          "absolute -bottom-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity",
+          isUser ? '-left-2' : '-right-2'
+        )}>
+            {message.audio && (
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePlayAudio}>
                     <Speaker size={16} className={cn(isPlaying && 'text-primary animate-pulse')} />
                 </Button>

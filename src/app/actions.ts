@@ -31,6 +31,7 @@ import {
 import {
   textToSpeech,
   type TextToSpeechInput,
+  type TextToSpeechOutput,
 } from '@/ai/flows/text-to-speech';
 
 import type { ConversationHistory, Settings, View } from '@/lib/types';
@@ -185,3 +186,6 @@ export async function getIdeaAction(
     return { error: 'Sorry, I encountered an error while generating ideas. Please try again.' };
   }
 }
+
+export { textToSpeech };
+export type { TextToSpeechInput, TextToSpeechOutput };
