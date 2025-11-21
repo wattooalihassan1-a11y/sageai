@@ -6,17 +6,14 @@ import {
   Lightbulb,
   Combine,
   MessageSquareQuote,
-  BrainCircuit,
   Brain,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { Chat } from '@/components/chat';
 import { Analyze } from '@/components/analyze';
 import { Explain } from '@/components/explain';
 import { Summarize } from '@/components/summarize';
 import { GetIdea } from '@/components/get-idea';
-import { ScrollArea, ScrollBar } from './ui/scroll-area';
 
 const capabilities = [
   { name: 'Solve', icon: Sparkles, component: <Chat /> },
@@ -31,8 +28,7 @@ export function CodeForge() {
 
   return (
     <div className="flex flex-col gap-4">
-      <ScrollArea className="w-full whitespace-nowrap">
-        <div className="flex w-max space-x-2 pb-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
           {capabilities.map((capability) => (
             <Button
               key={capability.name}
@@ -44,25 +40,11 @@ export function CodeForge() {
               {capability.name}
             </Button>
           ))}
-        </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      </div>
 
       <div className="rounded-xl border bg-card p-6 shadow-sm min-h-[600px]">
         {activeCapability.component}
       </div>
     </div>
   );
-}
-
-function ComingSoon({ name }: { name: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-4 text-center h-full animate-fade-in-slide-up">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-        <BrainCircuit className="h-6 w-6 text-primary" />
-      </div>
-      <h3 className="text-xl font-bold">{name} is coming soon!</h3>
-      <p className="text-muted-foreground">This feature is under development. Please check back later.</p>
-    </div>
-  )
 }
