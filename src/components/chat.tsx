@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Speaker, Mic } from 'lucide-react';
+import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Speaker, Mic, Trash2, Check } from 'lucide-react';
 import type { ChatMessage as ChatMessageType, Settings, View } from '@/lib/types';
 import { getAiResponse } from '@/app/actions';
 import { cn } from '@/lib/utils';
@@ -143,7 +143,7 @@ export function Chat({ onViewChange }: ChatProps) {
     }
   };
 
-  const handleVoiceRecording = () => {
+  const handleToggleVoiceRecording = () => {
     if (!recognitionRef.current) {
         toast({ variant: 'destructive', description: 'Speech recognition is not supported in your browser.' });
         return;
@@ -159,10 +159,16 @@ export function Chat({ onViewChange }: ChatProps) {
   
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if(isRecording) {
-      recognitionRef.current?.stop();
-    } else {
-      handleSubmit();
+    handleSubmit();
+  };
+
+  const handleStopRecording = (shouldSubmit: boolean) => {
+    if (recognitionRef.current) {
+        if (!shouldSubmit) {
+            // Overwrite onresult to do nothing before stopping
+            recognitionRef.current.onresult = () => {};
+        }
+        recognitionRef.current.stop();
     }
   };
 
@@ -220,25 +226,11 @@ export function Chat({ onViewChange }: ChatProps) {
               isFocused ? "ring-2 ring-primary ring-offset-2" : ""
             )}
           >
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="shrink-0 ml-1"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isPending}
-            >
-              <Paperclip size={18} />
-            </Button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-            {isRecording && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-md z-10">
+            {isRecording ? (
+                <div className="flex items-center justify-between w-full p-2">
+                    <Button type="button" variant="ghost" size="icon" onClick={() => handleStopRecording(false)}>
+                        <Trash2 className='text-destructive' />
+                    </Button>
                     <div className="flex items-center gap-1.5">
                         <span className="h-4 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.3s]"></span>
                         <span className="h-6 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.15s]"></span>
@@ -246,40 +238,63 @@ export function Chat({ onViewChange }: ChatProps) {
                         <span className="h-6 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.15s]"></span>
                         <span className="h-4 w-1 animate-[voice-wave_1s_infinite_ease-in-out] rounded-full bg-primary [animation-delay:-0.3s]"></span>
                     </div>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => handleStopRecording(true)}>
+                        <Check className='text-green-500' />
+                    </Button>
                 </div>
-            )}
-            <Textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={isRecording ? "Listening..." : "Message Clarity AI..."}
-              className="min-h-[40px] flex-1 resize-none border-0 bg-transparent px-0 py-2 focus-visible:ring-0"
-              rows={1}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleFormSubmit(e);
-                }
-              }}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              disabled={isPending || isRecording}
-              autoFocus
-            />
-            <div className='flex items-center self-center'>
-              <Button
+            ) : (
+              <>
+                <Button
                   type="button"
-                  variant={isRecording ? "destructive" : "ghost"}
+                  variant="ghost"
                   size="icon"
-                  className="shrink-0"
-                  onClick={handleVoiceRecording}
+                  className="shrink-0 ml-1"
+                  onClick={() => fileInputRef.current?.click()}
                   disabled={isPending}
-              >
-                  <Mic size={18} />
-              </Button>
-              <Button type="submit" disabled={(!input.trim() && !image) || isPending} size="icon">
-                  <Send size={18} />
-              </Button>
-            </div>
+                >
+                  <Paperclip size={18} />
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                <Textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Message Clarity AI..."
+                  className="min-h-[40px] flex-1 resize-none border-0 bg-transparent px-0 py-2 focus-visible:ring-0"
+                  rows={1}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleFormSubmit(e);
+                    }
+                  }}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  disabled={isPending}
+                  autoFocus
+                />
+                <div className='flex items-center self-center'>
+                  <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="shrink-0"
+                      onClick={handleToggleVoiceRecording}
+                      disabled={isPending}
+                  >
+                      <Mic size={18} />
+                  </Button>
+                  <Button type="submit" disabled={(!input.trim() && !image) || isPending} size="icon">
+                      <Send size={18} />
+                  </Button>
+                </div>
+              </>
+            )}
           </form>
         </div>
       </div>
@@ -394,5 +409,3 @@ function ChatMessage({ message }: ChatMessageProps) {
     </div>
   );
 }
-
-    
