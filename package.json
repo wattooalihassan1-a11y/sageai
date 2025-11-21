@@ -66,9 +66,10 @@
     "@types/uuid": "^9.0.8",
     "chokidar": "^3.6.0",
     "genkit-cli": "^1.21.0",
+    "glob": "^11.0.0",
     "inquirer": "^9.2.20",
     "postcss": "^8",
-    "rimraf": "^5.0.8",
+    "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
     "tsx": "^4.16.2"
