@@ -35,12 +35,12 @@ export function CodeForge() {
             key={capability.name}
             variant={activeCapability.name === capability.name ? 'default' : 'outline'}
             className={cn(
-              "flex flex-col items-center justify-center h-20 w-full p-2 gap-1",
+              "flex flex-col items-center justify-center h-16 w-full p-2 gap-1",
               "text-xs font-semibold leading-tight text-center"
             )}
             onClick={() => setActiveCapability(capability)}
           >
-            <capability.icon className="h-5 w-5 mb-1" />
+            <capability.icon className="h-4 w-4 mb-1" />
             <span>{capability.name}</span>
           </Button>
         ))}
