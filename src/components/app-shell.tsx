@@ -11,7 +11,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         <div className="flex items-baseline gap-2">
           <h1 className="text-xl font-bold tracking-tight">Clarity AI</h1>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-[10px] text-muted-foreground">
             by NextGenDeveloper Ali Hassan
           </span>
         </div>
