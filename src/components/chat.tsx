@@ -16,7 +16,7 @@ const initialMessages: ChatMessageType[] = [
     {
       id: uuidv4(),
       role: 'assistant',
-      content: 'Hello! How can I help you today? You can use commands like `/analyze <problem>`, `/explain <topic>`, `/summarize <text>`, `/idea <topic>`, or `/imagine <prompt>`.',
+      content: 'Hello! How can I help you today?',
     },
 ];
 
