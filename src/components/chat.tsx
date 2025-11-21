@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Speaker } from 'lucide-react';
+import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Speaker, Mic } from 'lucide-react';
 import type { ChatMessage as ChatMessageType, Settings, View } from '@/lib/types';
 import { getAiResponse } from '@/app/actions';
 import { cn } from '@/lib/utils';
@@ -34,8 +34,10 @@ export function Chat({ onViewChange }: ChatProps) {
     persona: 'Helpful Assistant',
   });
   const [image, setImage] = useState<string | undefined>(undefined);
+  const [isRecording, setIsRecording] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
   const scrollToBottom = useCallback(() => {
@@ -51,6 +53,34 @@ export function Chat({ onViewChange }: ChatProps) {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isPending, scrollToBottom]);
+  
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      const recognition = recognitionRef.current;
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join('');
+        setInput(transcript);
+      };
+
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        console.error('Speech recognition error:', event.error);
+        toast({ variant: 'destructive', description: `Speech recognition error: ${event.error}` });
+        setIsRecording(false);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+    }
+  }, [toast]);
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -110,6 +140,20 @@ export function Chat({ onViewChange }: ChatProps) {
     } finally {
         setIsPending(false);
     }
+  };
+
+  const handleVoiceRecording = () => {
+    if (!recognitionRef.current) {
+        toast({ variant: 'destructive', description: 'Speech recognition is not supported in your browser.' });
+        return;
+    }
+
+    if (isRecording) {
+        recognitionRef.current.stop();
+    } else {
+        recognitionRef.current.start();
+    }
+    setIsRecording(!isRecording);
   };
 
   return (
@@ -191,6 +235,16 @@ export function Chat({ onViewChange }: ChatProps) {
               disabled={isPending}
               autoFocus
             />
+            <Button
+                type="button"
+                variant={isRecording ? 'destructive' : 'outline'}
+                size="icon"
+                className="shrink-0"
+                onClick={handleVoiceRecording}
+                disabled={isPending}
+            >
+                <Mic size={18} />
+            </Button>
             <Button type="submit" disabled={(!input.trim() && !image) || isPending} size="icon">
               <Send size={18} />
             </Button>
