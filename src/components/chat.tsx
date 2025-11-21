@@ -16,7 +16,7 @@ const initialMessages: ChatMessageType[] = [
     {
       id: uuidv4(),
       role: 'assistant',
-      content: 'Hello! How can I help you solve a problem today?',
+      content: 'Hello! How can I help you today?',
     },
 ];
 
@@ -88,7 +88,7 @@ export function Chat() {
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-3 mb-6">
         <Sparkles className="h-6 w-6 text-primary" />
-        <h2 className="text-2xl font-bold">Solve a Problem</h2>
+        <h2 className="text-2xl font-bold">Chat with AI</h2>
       </div>
       
       <div ref={scrollAreaRef} className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-6">
