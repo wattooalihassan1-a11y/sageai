@@ -116,7 +116,7 @@ export function Chat() {
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="e.g., Can you help me brainstorm ideas for a new project?"
+            placeholder="Message Clarity AI..."
             className="min-h-[40px] flex-1 resize-none bg-background"
             rows={1}
             onKeyDown={(e) => {
