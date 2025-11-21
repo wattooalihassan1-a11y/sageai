@@ -46,7 +46,7 @@ export function Chat({ onViewChange }: ChatProps) {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, scrollToBottom]);
+  }, [messages, scrollToBottom, isPending]);
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,7 +76,7 @@ export function Chat({ onViewChange }: ChatProps) {
     setIsPending(true);
 
     try {
-      const history = messages.map(({ role, content }) => ({ role, content }));
+      const history = messages.slice(-5).map(({ role, content }) => ({ role, content }));
       
       const result = await getAiResponse(history, input, settings, image);
 
