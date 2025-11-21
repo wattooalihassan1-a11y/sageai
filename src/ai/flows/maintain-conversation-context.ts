@@ -30,12 +30,13 @@ export async function maintainConversationContext(input: MaintainConversationCon
       content: [{text: msg.content}]
   })) ?? [];
 
-  const promptParts: any[] = [{text: userInput}];
-  
+  const promptParts: any[] = [];
+
   if (image) {
     promptParts.push({media: {url: image}});
   }
-
+  promptParts.push({text: userInput});
+  
   const result = await ai.generate({
     model: 'googleai/gemini-2.5-flash',
     system: systemPrompt,
