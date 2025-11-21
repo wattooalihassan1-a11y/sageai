@@ -12,6 +12,7 @@ import Markdown from 'react-markdown';
 import { useToast } from '@/hooks/use-toast';
 import { ChatSettings } from './chat-settings';
 import { useChatHistory } from '@/hooks/use-chat-history';
+import { LoadingCircle } from './icons';
 
 const initialMessages: ChatMessageType[] = [
     {
@@ -343,6 +344,7 @@ type ChatMessageProps = {
 function ChatMessage({ message, onMessageUpdate }: ChatMessageProps) {
   const { toast } = useToast();
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const isUser = message.role === 'user';
@@ -358,6 +360,8 @@ function ChatMessage({ message, onMessageUpdate }: ChatMessageProps) {
   };
 
   const handlePlayAudio = async () => {
+    if (isGeneratingAudio) return;
+
     if (audioRef.current && !audioRef.current.paused) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -368,6 +372,7 @@ function ChatMessage({ message, onMessageUpdate }: ChatMessageProps) {
     let audioSrc = message.audio;
   
     if (!audioSrc && message.content) {
+      setIsGeneratingAudio(true);
       try {
         const { textToSpeech } = await import('@/app/actions');
         const result = await textToSpeech({ text: message.content });
@@ -375,8 +380,11 @@ function ChatMessage({ message, onMessageUpdate }: ChatMessageProps) {
         onMessageUpdate({ ...message, audio: audioSrc });
       } catch (error) {
         console.error("Error generating speech:", error);
-        toast({ variant: 'destructive', description: 'Error generating speech.' });
+        toast({ variant: 'destructive', description: 'Error generating speech. Please try again later.' });
+        setIsGeneratingAudio(false);
         return;
+      } finally {
+        setIsGeneratingAudio(false);
       }
     }
   
@@ -439,8 +447,12 @@ function ChatMessage({ message, onMessageUpdate }: ChatMessageProps) {
           isUser ? '-left-2' : '-right-2'
         )}>
             {message.content && (
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePlayAudio}>
-                    <Speaker size={16} className={cn(isPlaying && 'text-primary animate-pulse')} />
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePlayAudio} disabled={isGeneratingAudio}>
+                    {isGeneratingAudio ? (
+                        <LoadingCircle size={16} />
+                    ) : (
+                        <Speaker size={16} className={cn(isPlaying && 'text-primary animate-pulse')} />
+                    )}
                 </Button>
             )}
             {!isUser && message.content && (
