@@ -8,3 +8,4 @@ import '@/ai/flows/respond-in-multiple-languages.ts';
 import '@/ai/flows/generate-picture.ts';
 import '@/ai/flows/analyze-problem.ts';
 import '@/ai/flows/explain-topic.ts';
+import '@/ai/flows/summarize-text.ts';

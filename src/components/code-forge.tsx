@@ -28,14 +28,15 @@ import { cn } from '@/lib/utils';
 import { Chat } from '@/components/chat';
 import { Analyze } from '@/components/analyze';
 import { Explain } from '@/components/explain';
+import { Summarize } from '@/components/summarize';
 import { ScrollArea, ScrollBar } from './ui/scroll-area';
 
 const capabilities = [
   { name: 'Solve', icon: Sparkles, component: <Chat /> },
   { name: 'Analyze', icon: Lightbulb, component: <Analyze /> },
   { name: 'Explain', icon: MessageSquareQuote, component: <Explain /> },
+  { name: 'Summarize Text', icon: Combine, component: <Summarize /> },
   { name: 'Get Advise', icon: BookText, component: <ComingSoon name="Get Advise" /> },
-  { name: 'Summarize Text', icon: Combine, component: <ComingSoon name="Summarize Text" /> },
   { name: 'Make a Plan', icon: ListTodo, component: <ComingSoon name="Make a Plan" /> },
   { name: 'Analyze Data', icon: BarChart, component: <ComingSoon name="Analyze Data" /> },
   { name: 'Code', icon: FileCode, component: <ComingSoon name="Code" /> },

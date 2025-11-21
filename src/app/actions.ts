@@ -18,6 +18,11 @@ import {
   type ExplainTopicInput,
   type ExplainTopicOutput,
 } from '@/ai/flows/explain-topic';
+import {
+  summarizeText,
+  type SummarizeTextInput,
+  type SummarizeTextOutput,
+} from '@/ai/flows/summarize-text';
 
 import type { ConversationHistory, Settings } from '@/lib/types';
 
@@ -73,5 +78,18 @@ export async function getTopicExplanation(
   } catch (error: any) {
     console.error('Error getting explanation:', error);
     return { error: 'Sorry, I encountered an error. Please try again.' };
+  }
+}
+
+export async function getSummary(
+  text: string
+): Promise<{ summary?: SummarizeTextOutput; error?: string }> {
+  try {
+    const input: SummarizeTextInput = { text };
+    const summary = await summarizeText(input);
+    return { summary };
+  } catch (error: any) {
+    console.error('Error getting summary:', error);
+    return { error: 'Sorry, I encountered an error during summarization. Please try again.' };
   }
 }
