@@ -204,7 +204,7 @@ export function Chat({ onViewChange }: ChatProps) {
         </div>
         
         <div ref={scrollAreaRef} className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-6">
-          {activeChat?.messages.map((message) => (
+          {(activeChat?.messages ?? []).map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
           {isPending && (
