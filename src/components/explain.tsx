@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MessageSquareQuote, BookOpen, Repeat, AlertTriangle, Wand } from 'lucide-react';
+import { MessageSquareQuote, BookOpen, Repeat, AlertTriangle, Wand, ClipboardCopy } from 'lucide-react';
 import { getTopicExplanation } from '@/app/actions';
 import type { ExplainTopicOutput } from '@/ai/flows/explain-topic';
 import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { useToast } from '@/hooks/use-toast';
 
 export function Explain() {
   const [topic, setTopic] = useState('');
@@ -71,9 +72,36 @@ export function Explain() {
 }
 
 function ExplanationResult({ explanation }: { explanation: ExplainTopicOutput }) {
+    const { toast } = useToast();
+
+    const handleCopy = () => {
+        const textToCopy = `
+Explanation:
+${explanation.explanation}
+
+Examples:
+- ${explanation.examples.join('\n- ')}
+
+Analogy:
+${explanation.analogy}
+        `.trim();
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            toast({
+                description: 'Explanation copied to clipboard!',
+            });
+        });
+    };
+
     return (
         <Card className="animate-fade-in-slide-up">
-            <CardContent className="pt-6 space-y-6">
+            <CardHeader className='flex-row items-center justify-between'>
+                <CardTitle>Explanation</CardTitle>
+                <Button variant="ghost" size="icon" onClick={handleCopy}>
+                    <ClipboardCopy />
+                </Button>
+            </CardHeader>
+            <CardContent className="space-y-6">
                 <div className="space-y-3">
                     <h3 className="text-lg font-semibold flex items-center gap-2">
                         <BookOpen className="text-primary"/>
