@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Speaker, Mic, Trash2, Check } from 'lucide-react';
+import { Sparkles, Send, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Speaker, Mic, Trash2, Check } from 'lucide-react';
 import type { ChatMessage as ChatMessageType, Settings, View } from '@/lib/types';
 import { getAiResponse } from '@/app/actions';
 import { cn } from '@/lib/utils';
@@ -197,9 +197,6 @@ export function Chat({ onViewChange }: ChatProps) {
           ))}
           {isPending && (
               <div className="flex items-start gap-4 animate-fade-in-slide-up">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      <Bot size={20} />
-                  </div>
                   <div className="flex-1 rounded-xl bg-muted p-4 text-sm">
                       <div className="flex items-center gap-2">
                           <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
@@ -372,11 +369,6 @@ function ChatMessage({ message }: ChatMessageProps) {
         isUser ? 'justify-end' : ''
       )}
     >
-      {!isUser && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Bot size={20} />
-        </div>
-      )}
       <div
         className={cn(
           'relative flex-1 max-w-[85%] rounded-xl p-4',
@@ -406,11 +398,6 @@ function ChatMessage({ message }: ChatMessageProps) {
             )}
         </div>
       </div>
-      {isUser && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
-          <User size={20} />
-        </div>
-      )}
     </div>
   );
 }
