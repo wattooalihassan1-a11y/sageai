@@ -23,3 +23,10 @@ export type Capability = {
   icon: React.ElementType;
   component: React.ReactElement<any>;
 };
+
+export type Chat = {
+  id: string;
+  title: string;
+  createdAt: number;
+  messages: ChatMessage[];
+};

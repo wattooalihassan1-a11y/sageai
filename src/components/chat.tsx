@@ -4,13 +4,14 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Send, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Speaker, Mic, Trash2, Check } from 'lucide-react';
-import type { ChatMessage as ChatMessageType, Settings, View } from '@/lib/types';
+import type { ChatMessage as ChatMessageType, Settings, View, Chat as ChatType } from '@/lib/types';
 import { getAiResponse } from '@/app/actions';
 import { cn } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
 import Markdown from 'react-markdown';
 import { useToast } from '@/hooks/use-toast';
 import { ChatSettings } from './chat-settings';
+import { useChatHistory } from '@/hooks/use-chat-history';
 
 const initialMessages: ChatMessageType[] = [
     {
@@ -25,7 +26,7 @@ interface ChatProps {
 }
 
 export function Chat({ onViewChange }: ChatProps) {
-  const [messages, setMessages] = useState<ChatMessageType[]>(initialMessages);
+  const { chats, activeChat, setActiveChat, createNewChat, deleteChat, updateChat } = useChatHistory(initialMessages);
   const [input, setInput] = useState('');
   const [isPending, setIsPending] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -59,22 +60,26 @@ export function Chat({ onViewChange }: ChatProps) {
     const currentInput = voiceInput || input;
     if ((!currentInput.trim() && !image) || isPending) return;
 
-    const userMessageId = uuidv4();
     const userMessage: ChatMessageType = {
-      id: userMessageId,
+      id: uuidv4(),
       role: 'user',
       content: currentInput,
       image: image,
     };
-    setMessages((prev) => [...prev, userMessage]);
+    
+    const newMessages = [...(activeChat?.messages ?? []), userMessage];
+    updateChat(activeChat!.id, { messages: newMessages });
+
     setInput('');
     setImage(undefined);
     setIsPending(true);
 
     try {
-      const history = messages.slice(-5).map(({ role, content }) => ({ role, content }));
+      const history = newMessages.slice(-6, -1).map(({ role, content }) => ({ role, content }));
       
       const result = await getAiResponse(history, currentInput, settings, image);
+
+      let finalMessages = [...newMessages];
 
       if (result.error) {
           const errorMessage: ChatMessageType = {
@@ -82,7 +87,7 @@ export function Chat({ onViewChange }: ChatProps) {
               role: 'assistant',
               content: result.error,
           };
-          setMessages((prev) => [...prev, errorMessage]);
+          finalMessages.push(errorMessage);
       } else {
           const assistantMessage: ChatMessageType = {
               id: uuidv4(),
@@ -91,7 +96,7 @@ export function Chat({ onViewChange }: ChatProps) {
               image: result.image,
               audio: result.audio,
           };
-          setMessages((prev) => [...prev, assistantMessage]);
+          finalMessages.push(assistantMessage);
 
           if (result.view && result.data && onViewChange) {
             setTimeout(() => {
@@ -99,16 +104,17 @@ export function Chat({ onViewChange }: ChatProps) {
             }, 1000);
           }
       }
+      updateChat(activeChat!.id, { messages: finalMessages, title: finalMessages.find(m => m.role === 'user')?.content });
     } finally {
         setIsPending(false);
     }
-  }, [input, image, isPending, messages, settings, onViewChange, isRecording]);
+  }, [input, image, isPending, settings, onViewChange, isRecording, activeChat, updateChat]);
 
   useEffect(() => {
-    if (messages.length > 1 || isPending) {
+    if ((activeChat?.messages?.length ?? 0) > 1 || isPending) {
         scrollToBottom();
     }
-  }, [messages, isPending, scrollToBottom]);
+  }, [activeChat?.messages, isPending, scrollToBottom]);
   
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -120,7 +126,7 @@ export function Chat({ onViewChange }: ChatProps) {
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
-        setInput(transcript); // Set input and let user submit
+        setInput(transcript);
         setIsRecording(false);
       };
 
@@ -177,7 +183,6 @@ export function Chat({ onViewChange }: ChatProps) {
                 handleSubmit(undefined, transcript);
             };
         } else {
-            // Overwrite onresult to do nothing before stopping
             recognitionRef.current.onresult = () => {};
         }
         recognitionRef.current.stop();
@@ -199,7 +204,7 @@ export function Chat({ onViewChange }: ChatProps) {
         </div>
         
         <div ref={scrollAreaRef} className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-6">
-          {messages.map((message) => (
+          {activeChat?.messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
           {isPending && (
@@ -312,6 +317,11 @@ export function Chat({ onViewChange }: ChatProps) {
         onOpenChange={setIsSettingsOpen}
         settings={settings}
         onSettingsChange={setSettings}
+        chatHistory={chats}
+        onSelectChat={(chatId) => setActiveChat(chatId)}
+        onNewChat={createNewChat}
+        onDeleteChat={deleteChat}
+        activeChatId={activeChat?.id}
       />
     </>
   );
@@ -339,31 +349,52 @@ function ChatMessage({ message }: ChatMessageProps) {
     }
   };
 
-  const handlePlayAudio = () => {
-    if (!message.audio) return;
-  
+  const handlePlayAudio = async () => {
     if (audioRef.current && !audioRef.current.paused) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       setIsPlaying(false);
-    } else {
-      if (!audioRef.current) {
-        audioRef.current = new Audio(message.audio);
-        audioRef.current.onended = () => setIsPlaying(false);
-        audioRef.current.onerror = () => {
-          setIsPlaying(false);
-          toast({ variant: 'destructive', description: 'Error playing audio.' });
-        };
-      }
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      return;
     }
+  
+    let audioSrc = message.audio;
+  
+    if (!audioSrc) {
+      try {
+        const { textToSpeech } = await import('@/app/actions');
+        const result = await textToSpeech({ text: message.content });
+        audioSrc = result.audioUrl;
+      } catch (error) {
+        console.error("Error generating speech:", error);
+        toast({ variant: 'destructive', description: 'Error generating speech.' });
+        return;
+      }
+    }
+  
+    if (audioRef.current) {
+      audioRef.current.src = audioSrc;
+    } else {
+      audioRef.current = new Audio(audioSrc);
+      audioRef.current.onended = () => setIsPlaying(false);
+      audioRef.current.onerror = (e) => {
+        setIsPlaying(false);
+        console.error("Audio playback error", e);
+        toast({ variant: 'destructive', description: 'Error playing audio.' });
+      };
+    }
+  
+    audioRef.current.play().then(() => setIsPlaying(true)).catch(e => {
+      setIsPlaying(false);
+      console.error("Audio playback failed", e);
+      toast({ variant: 'destructive', description: 'Could not play audio.' });
+    });
   };
   
   useEffect(() => {
-    // Cleanup audio on component unmount
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.src = '';
         audioRef.current = null;
       }
     };
@@ -396,7 +427,7 @@ function ChatMessage({ message }: ChatMessageProps) {
           "absolute -bottom-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity",
           isUser ? '-left-2' : '-right-2'
         )}>
-            {message.audio && (
+            {message.content && (
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePlayAudio}>
                     <Speaker size={16} className={cn(isPlaying && 'text-primary animate-pulse')} />
                 </Button>
