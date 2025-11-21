@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Send, User, Bot, Settings as SettingsIcon } from 'lucide-react';
+import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy } from 'lucide-react';
 import type { ChatMessage as ChatMessageType, Settings } from '@/lib/types';
 import { getAiResponse } from '@/app/actions';
 import { cn } from '@/lib/utils';
@@ -148,12 +148,21 @@ type ChatMessageProps = {
 };
 
 function ChatMessage({ message }: ChatMessageProps) {
+  const { toast } = useToast();
   const isUser = message.role === 'user';
   
+  const handleCopy = () => {
+    navigator.clipboard.writeText(message.content).then(() => {
+      toast({
+        description: 'Copied to clipboard!',
+      });
+    });
+  };
+
   return (
     <div
       className={cn(
-        'flex items-start gap-4 animate-fade-in-slide-up',
+        'flex items-start gap-4 animate-fade-in-slide-up group',
         isUser ? 'justify-end' : ''
       )}
     >
@@ -176,6 +185,16 @@ function ChatMessage({ message }: ChatMessageProps) {
           <div className="prose prose-sm dark:prose-invert max-w-none">
             <Markdown>{message.content}</Markdown>
           </div>
+        )}
+        {!isUser && !message.image && (
+           <Button
+            variant="ghost"
+            size="icon"
+            className="absolute -bottom-2 -right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={handleCopy}
+           >
+             <ClipboardCopy size={16} />
+           </Button>
         )}
       </div>
       {isUser && (
