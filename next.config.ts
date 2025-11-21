@@ -34,11 +34,9 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
       serverActionsBodySizeLimit: '2mb',
+      // 5 minutes timeout for server actions
+      maxDuration: 300,
     },
-  },
-  serverActions: {
-    // 5 minutes timeout for server actions
-    maxDuration: 300,
   },
 };
 
