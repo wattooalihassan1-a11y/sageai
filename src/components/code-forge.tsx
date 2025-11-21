@@ -3,14 +3,14 @@
 import React, { useState, useMemo } from 'react';
 import {
   Sparkles,
-  Lightbulb,
+  BookMarked,
   Combine,
   MessageSquareQuote,
   Brain,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Chat } from '@/components/chat';
-import { Analyze, type AnalyzeData } from '@/components/analyze';
+import { HomeworkHelper, type HomeworkData } from '@/components/homework-helper';
 import { Explain, type ExplainData } from '@/components/explain';
 import { Summarize, type SummarizeData } from '@/components/summarize';
 import { GetIdea, type IdeaData } from '@/components/get-idea';
@@ -23,7 +23,7 @@ export function CodeForge() {
 
   const capabilities: Capability[] = useMemo(() => [
     { name: 'Solve', icon: Sparkles, component: <Chat onViewChange={handleViewChange} /> },
-    { name: 'Analyze', icon: Lightbulb, component: <Analyze initialData={viewData['Analyze']} /> },
+    { name: 'Homework Helper', icon: BookMarked, component: <HomeworkHelper initialData={viewData['Homework Helper']} /> },
     { name: 'Explain', icon: MessageSquareQuote, component: <Explain initialData={viewData['Explain']} /> },
     { name: 'Summarize', icon: Combine, component: <Summarize initialData={viewData['Summarize']} /> },
     { name: 'Get Idea', icon: Brain, component: <GetIdea initialData={viewData['Get Idea']} /> },

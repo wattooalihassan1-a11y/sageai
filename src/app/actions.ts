@@ -9,10 +9,10 @@ import {
   type MaintainConversationContextInput,
 } from '@/ai/flows/maintain-conversation-context';
 import {
-  analyzeProblem,
-  type AnalyzeProblemInput,
-  type AnalyzeProblemOutput,
-} from '@/ai/flows/analyze-problem';
+  homeworkHelper,
+  type HomeworkHelperInput,
+  type HomeworkHelperOutput,
+} from '@/ai/flows/homework-helper';
 import {
   explainTopic,
   type ExplainTopicInput,
@@ -58,14 +58,14 @@ export async function getAiResponse(
       return { image: result.imageUrl };
     }
     
-    if (userInput.startsWith('/analyze ')) {
-      const problem = userInput.replace('/analyze ', '');
-      const { analysis, error } = await getProblemAnalysis(problem);
+    if (userInput.startsWith('/homework ')) {
+      const question = userInput.replace('/homework ', '');
+      const { result, error } = await getHomeworkHelp(question);
       if (error) return { error };
       return { 
-        view: 'Analyze', 
-        data: { input: problem, result: analysis }, 
-        response: `I've analyzed the problem. Switching to the 'Analyze' view to show you the results.` 
+        view: 'Homework Helper', 
+        data: { input: question, result: result }, 
+        response: `I've prepared a step-by-step guide for your question. Switching to the 'Homework Helper' view.` 
       };
     }
 
@@ -134,16 +134,16 @@ export async function getAiResponse(
   }
 }
 
-export async function getProblemAnalysis(
-  problem: string
-): Promise<{ analysis?: AnalyzeProblemOutput; error?: string }> {
+export async function getHomeworkHelp(
+  question: string
+): Promise<{ result?: HomeworkHelperOutput; error?: string }> {
   try {
-    const input: AnalyzeProblemInput = { problem };
-    const analysis = await analyzeProblem(input);
-    return { analysis };
+    const input: HomeworkHelperInput = { question };
+    const result = await homeworkHelper(input);
+    return { result };
   } catch (error: any) {
-    console.error('Error analyzing problem:', error);
-    return { error: 'Sorry, I encountered an error during analysis. Please try again.' };
+    console.error('Error in homework helper:', error);
+    return { error: 'Sorry, I encountered an error helping with your homework. Please try again.' };
   }
 }
 
