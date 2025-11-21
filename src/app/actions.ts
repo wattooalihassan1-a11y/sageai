@@ -23,6 +23,11 @@ import {
   type SummarizeTextInput,
   type SummarizeTextOutput,
 } from '@/ai/flows/summarize-text';
+import {
+  getIdea,
+  type GetIdeaInput,
+  type GetIdeaOutput,
+} from '@/ai/flows/get-idea';
 
 import type { ConversationHistory, Settings } from '@/lib/types';
 
@@ -91,5 +96,18 @@ export async function getSummary(
   } catch (error: any) {
     console.error('Error getting summary:', error);
     return { error: 'Sorry, I encountered an error during summarization. Please try again.' };
+  }
+}
+
+export async function getIdeaAction(
+  topic: string
+): Promise<{ ideas?: GetIdeaOutput; error?: string }> {
+  try {
+    const input: GetIdeaInput = { topic };
+    const ideas = await getIdea(input);
+    return { ideas };
+  } catch (error: any) {
+    console.error('Error getting ideas:', error);
+    return { error: 'Sorry, I encountered an error while generating ideas. Please try again.' };
   }
 }

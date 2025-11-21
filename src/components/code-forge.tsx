@@ -7,6 +7,7 @@ import {
   Combine,
   MessageSquareQuote,
   BrainCircuit,
+  Brain,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -14,6 +15,7 @@ import { Chat } from '@/components/chat';
 import { Analyze } from '@/components/analyze';
 import { Explain } from '@/components/explain';
 import { Summarize } from '@/components/summarize';
+import { GetIdea } from '@/components/get-idea';
 import { ScrollArea, ScrollBar } from './ui/scroll-area';
 
 const capabilities = [
@@ -21,6 +23,7 @@ const capabilities = [
   { name: 'Analyze', icon: Lightbulb, component: <Analyze /> },
   { name: 'Explain', icon: MessageSquareQuote, component: <Explain /> },
   { name: 'Summarize', icon: Combine, component: <Summarize /> },
+  { name: 'Get Idea', icon: Brain, component: <GetIdea /> },
 ];
 
 export function CodeForge() {
