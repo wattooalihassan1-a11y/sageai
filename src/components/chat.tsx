@@ -189,6 +189,13 @@ export function Chat({ onViewChange }: ChatProps) {
         setIsRecording(false);
     }
   };
+  
+  const handleMessageUpdate = (updatedMessage: ChatMessageType) => {
+    if (activeChat) {
+      const updatedMessages = activeChat.messages.map(m => m.id === updatedMessage.id ? updatedMessage : m);
+      updateChat(activeChat.id, { messages: updatedMessages });
+    }
+  };
 
   return (
     <>
@@ -205,7 +212,7 @@ export function Chat({ onViewChange }: ChatProps) {
         
         <div ref={scrollAreaRef} className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-6">
           {(activeChat?.messages ?? []).map((message) => (
-            <ChatMessage key={message.id} message={message} />
+            <ChatMessage key={message.id} message={message} onMessageUpdate={handleMessageUpdate} />
           ))}
           {isPending && (
               <div className="flex items-start gap-4 animate-fade-in-slide-up">
@@ -330,9 +337,10 @@ export function Chat({ onViewChange }: ChatProps) {
 
 type ChatMessageProps = {
   message: ChatMessageType;
+  onMessageUpdate: (message: ChatMessageType) => void;
 };
 
-function ChatMessage({ message }: ChatMessageProps) {
+function ChatMessage({ message, onMessageUpdate }: ChatMessageProps) {
   const { toast } = useToast();
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -359,11 +367,12 @@ function ChatMessage({ message }: ChatMessageProps) {
   
     let audioSrc = message.audio;
   
-    if (!audioSrc) {
+    if (!audioSrc && message.content) {
       try {
         const { textToSpeech } = await import('@/app/actions');
         const result = await textToSpeech({ text: message.content });
         audioSrc = result.audioUrl;
+        onMessageUpdate({ ...message, audio: audioSrc });
       } catch (error) {
         console.error("Error generating speech:", error);
         toast({ variant: 'destructive', description: 'Error generating speech.' });
@@ -371,23 +380,25 @@ function ChatMessage({ message }: ChatMessageProps) {
       }
     }
   
-    if (audioRef.current) {
-      audioRef.current.src = audioSrc;
-    } else {
-      audioRef.current = new Audio(audioSrc);
-      audioRef.current.onended = () => setIsPlaying(false);
-      audioRef.current.onerror = (e) => {
-        setIsPlaying(false);
-        console.error("Audio playback error", e);
-        toast({ variant: 'destructive', description: 'Error playing audio.' });
-      };
+    if (audioSrc) {
+        if (audioRef.current) {
+          audioRef.current.src = audioSrc;
+        } else {
+          audioRef.current = new Audio(audioSrc);
+          audioRef.current.onended = () => setIsPlaying(false);
+          audioRef.current.onerror = (e) => {
+            setIsPlaying(false);
+            console.error("Audio playback error", e);
+            toast({ variant: 'destructive', description: 'Error playing audio.' });
+          };
+        }
+      
+        audioRef.current.play().then(() => setIsPlaying(true)).catch(e => {
+          setIsPlaying(false);
+          console.error("Audio playback failed", e);
+          toast({ variant: 'destructive', description: 'Could not play audio.' });
+        });
     }
-  
-    audioRef.current.play().then(() => setIsPlaying(true)).catch(e => {
-      setIsPlaying(false);
-      console.error("Audio playback failed", e);
-      toast({ variant: 'destructive', description: 'Could not play audio.' });
-    });
   };
   
   useEffect(() => {

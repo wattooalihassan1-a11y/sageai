@@ -116,19 +116,7 @@ export async function getAiResponse(
     const textResult = await maintainConversationContext(input);
     const responseText = textResult.response;
 
-    let audioUrl: string | undefined;
-    if (responseText) {
-        try {
-            const ttsInput: TextToSpeechInput = { text: responseText };
-            const audioResult = await textToSpeech(ttsInput);
-            audioUrl = audioResult.audioUrl;
-        } catch (ttsError) {
-            console.error('Error generating speech:', ttsError);
-            // Non-fatal, we can still return the text response
-        }
-    }
-
-    return { response: responseText, audio: audioUrl };
+    return { response: responseText };
   } catch (error: any) {
     console.error('Error getting AI response:', error);
     return { error: 'Sorry, I encountered an error. Please try again.' };
