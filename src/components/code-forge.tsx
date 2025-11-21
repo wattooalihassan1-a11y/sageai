@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { Chat } from '@/components/chat';
 import { Analyze } from '@/components/analyze';
 import { Explain } from '@/components/explain';
+import { ScrollArea, ScrollBar } from './ui/scroll-area';
 
 const capabilities = [
   { name: 'Solve', icon: Sparkles, component: <Chat /> },
@@ -49,35 +50,22 @@ export function CodeForge() {
 
   return (
     <div className="flex flex-col gap-4">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className="h-14 justify-between rounded-lg p-3 text-base font-semibold"
-          >
-            <div className="flex items-center gap-3">
-              <activeCapability.icon className="h-5 w-5 text-primary" />
-              {activeCapability.name}
-            </div>
-            <ChevronDown className="h-5 w-5 text-muted-foreground" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
+      <ScrollArea className="w-full whitespace-nowrap">
+        <div className="flex w-max space-x-2 pb-2">
           {capabilities.map((capability) => (
-            <DropdownMenuItem
+            <Button
               key={capability.name}
-              className={cn(
-                'h-12 justify-start gap-3 rounded-lg p-3 text-base font-semibold',
-                activeCapability.name === capability.name && 'bg-primary/10 text-primary'
-              )}
+              variant={activeCapability.name === capability.name ? 'default' : 'outline'}
+              className="h-14 rounded-lg p-3 text-base font-semibold"
               onClick={() => setActiveCapability(capability)}
             >
-              <capability.icon className="h-5 w-5" />
+              <capability.icon className="mr-2 h-5 w-5" />
               {capability.name}
-            </DropdownMenuItem>
+            </Button>
           ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
 
       <div className="rounded-xl border bg-card p-6 shadow-sm min-h-[600px]">
         {activeCapability.component}
