@@ -54,7 +54,7 @@ export function HomeworkHelper({ initialData }: HomeworkHelperProps) {
     <div className="flex flex-col h-full animate-fade-in-slide-up">
       <div className="flex items-center gap-3 mb-6">
         <BookMarked className="h-6 w-6 text-primary" />
-        <h2 className="text-2xl font-bold">Homework Helper</h2>
+        <h2 className="text-2xl font-bold">Study Helper</h2>
       </div>
       
       <div className="flex-1 space-y-6">

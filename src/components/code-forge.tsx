@@ -23,7 +23,7 @@ export function CodeForge() {
 
   const capabilities: Capability[] = useMemo(() => [
     { name: 'Solve', icon: Sparkles, component: <Chat onViewChange={handleViewChange} /> },
-    { name: 'Homework Helper', icon: BookMarked, component: <HomeworkHelper initialData={viewData['Homework Helper']} /> },
+    { name: 'Study', icon: BookMarked, component: <HomeworkHelper initialData={viewData['Study']} /> },
     { name: 'Explain', icon: MessageSquareQuote, component: <Explain initialData={viewData['Explain']} /> },
     { name: 'Summarize', icon: Combine, component: <Summarize initialData={viewData['Summarize']} /> },
     { name: 'Get Idea', icon: Brain, component: <GetIdea initialData={viewData['Get Idea']} /> },

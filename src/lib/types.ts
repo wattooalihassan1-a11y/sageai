@@ -16,7 +16,7 @@ export type ConversationHistory = {
   content: string;
 };
 
-export type View = 'Solve' | 'Homework Helper' | 'Explain' | 'Summarize' | 'Get Idea';
+export type View = 'Solve' | 'Study' | 'Explain' | 'Summarize' | 'Get Idea';
 
 export type Capability = {
   name: View;

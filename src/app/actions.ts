@@ -58,14 +58,14 @@ export async function getAiResponse(
       return { image: result.imageUrl };
     }
     
-    if (userInput.startsWith('/homework ')) {
-      const question = userInput.replace('/homework ', '');
+    if (userInput.startsWith('/study ')) {
+      const question = userInput.replace('/study ', '');
       const { result, error } = await getHomeworkHelp(question);
       if (error) return { error };
       return { 
-        view: 'Homework Helper', 
+        view: 'Study', 
         data: { input: question, result: result }, 
-        response: `I've prepared a step-by-step guide for your question. Switching to the 'Homework Helper' view.` 
+        response: `I've prepared a step-by-step guide for your question. Switching to the 'Study' view.` 
       };
     }
 
