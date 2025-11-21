@@ -40,7 +40,11 @@ export function Chat({ onViewChange }: ChatProps) {
 
   const scrollToBottom = useCallback(() => {
     if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+        setTimeout(() => {
+            if (scrollAreaRef.current) {
+                scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+            }
+        }, 0);
     }
   }, []);
 
@@ -76,7 +80,7 @@ export function Chat({ onViewChange }: ChatProps) {
     setIsPending(true);
 
     try {
-      const history = messages.slice(-5).map(({ role, content }) => ({ role, content }));
+      const history = messages.map(({ role, content }) => ({ role, content }));
       
       const result = await getAiResponse(history, input, settings, image);
 
