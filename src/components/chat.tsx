@@ -162,7 +162,10 @@ export function Chat({ onViewChange }: ChatProps) {
   
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSubmit();
+    handleSubmit(e);
+    if (isRecording) {
+        handleStopRecording(true);
+    }
   };
 
   const handleStopRecording = (shouldSubmit: boolean) => {
@@ -272,7 +275,6 @@ export function Chat({ onViewChange }: ChatProps) {
                   rows={1}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
                       handleFormSubmit(e);
                     }
                   }}
