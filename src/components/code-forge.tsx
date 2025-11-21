@@ -35,10 +35,11 @@ export function CodeForge() {
               <Button
                 key={capability.name}
                 variant={activeCapability.name === capability.name ? 'default' : 'outline'}
-                className="h-12 rounded-lg px-4 py-2 text-sm font-semibold"
+                size="sm"
+                className="rounded-lg font-semibold"
                 onClick={() => setActiveCapability(capability)}
               >
-                <capability.icon className="mr-2 h-5 w-5" />
+                <capability.icon className="mr-2 h-4 w-4" />
                 {capability.name}
               </Button>
             ))}
