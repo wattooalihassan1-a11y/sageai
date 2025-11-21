@@ -15,23 +15,21 @@ export function useChatHistory(initialMessages: ChatMessage[]) {
       const savedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
       const parsedHistory: Chat[] = savedHistory ? JSON.parse(savedHistory) : [];
       
-      if (parsedHistory.length > 0) {
-        setChats(parsedHistory);
-        setActiveChatId(parsedHistory[0]?.id);
-      } else {
-        const newChatId = uuidv4();
-        const newChat: Chat = {
-          id: newChatId,
-          title: 'New Chat',
-          createdAt: Date.now(),
-          messages: initialMessages,
-        };
-        setChats([newChat]);
-        setActiveChatId(newChatId);
-        localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify([newChat]));
-      }
+      const newChatId = uuidv4();
+      const newChat: Chat = {
+        id: newChatId,
+        title: 'New Chat',
+        createdAt: Date.now(),
+        messages: initialMessages,
+      };
+
+      const updatedChats = [newChat, ...parsedHistory];
+      setChats(updatedChats);
+      setActiveChatId(newChatId);
+      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(updatedChats));
+
     } catch (error) {
-      console.error("Failed to load chat history from localStorage", error);
+      console.error("Failed to load or create chat history from localStorage", error);
       // Fallback to initial state if localStorage fails
       const newChatId = uuidv4();
       const newChat = {
@@ -43,7 +41,8 @@ export function useChatHistory(initialMessages: ChatMessage[]) {
       setChats([newChat]);
       setActiveChatId(newChatId);
     }
-  }, [initialMessages]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const saveChats = useCallback((updatedChats: Chat[]) => {
     try {
