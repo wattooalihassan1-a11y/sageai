@@ -125,6 +125,7 @@ export function Chat() {
               }
             }}
             disabled={isPending}
+            autoFocus
           />
           <Button type="submit" disabled={!input.trim() || isPending} size="icon">
             <Send size={18} />
