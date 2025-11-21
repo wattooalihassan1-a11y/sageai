@@ -30,31 +30,6 @@ import {
 } from '@/ai/flows/get-idea';
 
 import type { ConversationHistory, Settings } from '@/lib/types';
-import type { Flow } from 'genkit';
-
-// Helper to run flows on Vercel. It uses fetch to call the API route.
-async function runFlowOnVercel<I, O>(flow: Flow<I, O>, input: I): Promise<O> {
-  const flowName = flow.name;
-  const apiUrl = process.env.VERCEL_URL
-    ? `https://` + process.env.VERCEL_URL + `/api/genkit/flow/${flowName}`
-    : `http://localhost:3000/api/genkit/flow/${flowName}`;
-
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ input }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Flow execution failed: ${response.statusText} - ${errorText}`);
-  }
-
-  const result = await response.json();
-  return result.output;
-}
 
 export async function getAiResponse(
   history: ConversationHistory[],
@@ -66,7 +41,7 @@ export async function getAiResponse(
     if (userInput.startsWith('/imagine ')) {
       const prompt = userInput.replace('/imagine ', '');
       const input: GeneratePictureInput = { prompt };
-      const result = await runFlowOnVercel(generatePicture, input);
+      const result = await generatePicture(input);
       return { image: result.imageUrl };
     }
 
@@ -77,7 +52,7 @@ export async function getAiResponse(
       language: settings.language,
       image,
     };
-    const result = await runFlowOnVercel(maintainConversationContext, input);
+    const result = await maintainConversationContext(input);
     return { response: result.response };
   } catch (error: any) {
     console.error('Error getting AI response:', error);
@@ -90,7 +65,7 @@ export async function getProblemAnalysis(
 ): Promise<{ analysis?: AnalyzeProblemOutput; error?: string }> {
   try {
     const input: AnalyzeProblemInput = { problem };
-    const analysis = await runFlowOnVercel(analyzeProblem, input);
+    const analysis = await analyzeProblem(input);
     return { analysis };
   } catch (error: any) {
     console.error('Error analyzing problem:', error);
@@ -103,7 +78,7 @@ export async function getTopicExplanation(
 ): Promise<{ explanation?: ExplainTopicOutput; error?: string }> {
   try {
     const input: ExplainTopicInput = { topic };
-    const explanation = await runFlowOnVercel(explainTopic, input);
+    const explanation = await explainTopic(input);
     return { explanation };
   } catch (error: any) {
     console.error('Error getting explanation:', error);
@@ -116,7 +91,7 @@ export async function getSummary(
 ): Promise<{ summary?: SummarizeTextOutput; error?: string }> {
   try {
     const input: SummarizeTextInput = { text };
-    const summary = await runFlowOnVercel(summarizeText, input);
+    const summary = await summarizeText(input);
     return { summary };
   } catch (error: any) {
     console.error('Error getting summary:', error);
@@ -129,7 +104,7 @@ export async function getIdeaAction(
 ): Promise<{ ideas?: GetIdeaOutput; error?: string }> {
   try {
     const input: GetIdeaInput = { topic };
-    const ideas = await runFlowOnVercel(getIdea, input);
+    const ideas = await getIdea(input);
     return { ideas };
   } catch (error: any) {
     console.error('Error getting ideas:', error);
