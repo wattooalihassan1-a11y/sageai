@@ -1,5 +1,3 @@
-'use client';
-
 import { CodeForge } from '@/components/code-forge';
 
 export default function Home() {
