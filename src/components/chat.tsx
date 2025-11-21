@@ -50,58 +50,15 @@ export function Chat({ onViewChange }: ChatProps) {
     }
   }, []);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isPending, scrollToBottom]);
-  
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
-      const recognition = recognitionRef.current;
-      recognition.continuous = true;
-      recognition.interimResults = true;
-
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
-        const transcript = Array.from(event.results)
-          .map(result => result[0])
-          .map(result => result.transcript)
-          .join('');
-        setInput(transcript);
-      };
-
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        console.error('Speech recognition error:', event.error);
-        toast({ variant: 'destructive', description: `Speech recognition error: ${event.error}` });
-        setIsRecording(false);
-      };
-
-      recognition.onend = () => {
-        setIsRecording(false);
-      };
-    }
-  }, [toast]);
-  
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if ((!input.trim() && !image) || isPending) return;
+  const handleSubmit = useCallback(async (e?: React.FormEvent, voiceInput?: string) => {
+    e?.preventDefault();
+    const currentInput = voiceInput || input;
+    if ((!currentInput.trim() && !image) || isPending) return;
 
     const userMessage: ChatMessageType = {
       id: uuidv4(),
       role: 'user',
-      content: input,
+      content: currentInput,
       image: image,
     };
     setMessages((prev) => [...prev, userMessage]);
@@ -112,7 +69,7 @@ export function Chat({ onViewChange }: ChatProps) {
     try {
       const history = messages.slice(-5).map(({ role, content }) => ({ role, content }));
       
-      const result = await getAiResponse(history, input, settings, image);
+      const result = await getAiResponse(history, currentInput, settings, image);
 
       if (result.error) {
           const errorMessage: ChatMessageType = {
@@ -139,6 +96,46 @@ export function Chat({ onViewChange }: ChatProps) {
       }
     } finally {
         setIsPending(false);
+    }
+  }, [input, image, isPending, messages, settings, onViewChange]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isPending, scrollToBottom]);
+  
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      const recognition = recognitionRef.current;
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        const transcript = event.results[0][0].transcript;
+        handleSubmit(undefined, transcript);
+      };
+
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        console.error('Speech recognition error:', event.error);
+        toast({ variant: 'destructive', description: `Speech recognition error: ${event.error}` });
+        setIsRecording(false);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+    }
+  }, [toast, handleSubmit]);
+  
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -224,7 +221,7 @@ export function Chat({ onViewChange }: ChatProps) {
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Message Clarity AI..."
+              placeholder={isRecording ? "Listening..." : "Message Clarity AI..."}
               className="min-h-[40px] flex-1 resize-none bg-background"
               rows={1}
               onKeyDown={(e) => {
@@ -232,7 +229,7 @@ export function Chat({ onViewChange }: ChatProps) {
                   handleSubmit(e);
                 }
               }}
-              disabled={isPending}
+              disabled={isPending || isRecording}
               autoFocus
             />
             <Button
