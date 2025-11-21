@@ -28,12 +28,17 @@ import {
   type GetIdeaInput,
   type GetIdeaOutput,
 } from '@/ai/flows/get-idea';
+import {
+  textToSpeech,
+  type TextToSpeechInput,
+} from '@/ai/flows/text-to-speech';
 
 import type { ConversationHistory, Settings, View } from '@/lib/types';
 
 type AiResponse = {
   response?: string;
   image?: string;
+  audio?: string;
   view?: View;
   data?: any;
   error?: string;
@@ -97,7 +102,6 @@ export async function getAiResponse(
         };
     }
 
-
     const recentHistory = history.slice(-5);
 
     const input: MaintainConversationContextInput = {
@@ -107,8 +111,23 @@ export async function getAiResponse(
       language: settings.language,
       image,
     };
-    const result = await maintainConversationContext(input);
-    return { response: result.response };
+
+    const textResult = await maintainConversationContext(input);
+    const responseText = textResult.response;
+
+    let audioUrl: string | undefined;
+    if (responseText) {
+        try {
+            const ttsInput: TextToSpeechInput = { text: responseText };
+            const audioResult = await textToSpeech(ttsInput);
+            audioUrl = audioResult.audioUrl;
+        } catch (ttsError) {
+            console.error('Error generating speech:', ttsError);
+            // Non-fatal, we can still return the text response
+        }
+    }
+
+    return { response: responseText, audio: audioUrl };
   } catch (error: any) {
     console.error('Error getting AI response:', error);
     return { error: 'Sorry, I encountered an error. Please try again.' };

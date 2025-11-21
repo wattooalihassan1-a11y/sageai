@@ -3,6 +3,7 @@ export type ChatMessage = {
   role: 'user' | 'assistant';
   content: string;
   image?: string;
+  audio?: string;
 };
 
 export type Settings = {

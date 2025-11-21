@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy, Paperclip, X } from 'lucide-react';
+import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Speaker } from 'lucide-react';
 import type { ChatMessage as ChatMessageType, Settings, View } from '@/lib/types';
 import { getAiResponse } from '@/app/actions';
 import { cn } from '@/lib/utils';
@@ -97,6 +97,7 @@ export function Chat({ onViewChange }: ChatProps) {
               role: 'assistant',
               content: result.response || '',
               image: result.image,
+              audio: result.audio,
           };
           setMessages((prev) => [...prev, assistantMessage]);
 
@@ -213,6 +214,9 @@ type ChatMessageProps = {
 
 function ChatMessage({ message }: ChatMessageProps) {
   const { toast } = useToast();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   const isUser = message.role === 'user';
   
   const handleCopy = () => {
@@ -224,6 +228,36 @@ function ChatMessage({ message }: ChatMessageProps) {
       });
     }
   };
+
+  const handlePlayAudio = () => {
+    if (!message.audio) return;
+  
+    if (audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    } else {
+      if (!audioRef.current) {
+        audioRef.current = new Audio(message.audio);
+        audioRef.current.onended = () => setIsPlaying(false);
+        audioRef.current.onerror = () => {
+          setIsPlaying(false);
+          toast({ variant: 'destructive', description: 'Error playing audio.' });
+        };
+      }
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+    }
+  };
+  
+  useEffect(() => {
+    // Cleanup audio on component unmount
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div
@@ -253,16 +287,18 @@ function ChatMessage({ message }: ChatMessageProps) {
             <Markdown>{message.content}</Markdown>
           </div>
         )}
-        {!isUser && message.content && (
-           <Button
-            variant="ghost"
-            size="icon"
-            className="absolute -bottom-2 -right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={handleCopy}
-           >
-             <ClipboardCopy size={16} />
-           </Button>
-        )}
+        <div className="absolute -bottom-2 -right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+            {message.audio && (
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePlayAudio}>
+                    <Speaker size={16} className={cn(isPlaying && 'text-primary animate-pulse')} />
+                </Button>
+            )}
+            {!isUser && message.content && (
+               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy}>
+                 <ClipboardCopy size={16} />
+               </Button>
+            )}
+        </div>
       </div>
       {isUser && (
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
