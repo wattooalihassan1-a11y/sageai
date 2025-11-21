@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Combine, FileText, AlertTriangle, Wand } from 'lucide-react';
+import { Combine, FileText, AlertTriangle, Wand, ClipboardCopy } from 'lucide-react';
 import { getSummary } from '@/app/actions';
 import type { SummarizeTextOutput } from '@/ai/flows/summarize-text';
 import { Skeleton } from './ui/skeleton';
-import { Card, CardContent } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { useToast } from '@/hooks/use-toast';
 
 export function Summarize() {
   const [text, setText] = useState('');
@@ -68,13 +69,28 @@ export function Summarize() {
 }
 
 function SummaryResult({ result }: { result: SummarizeTextOutput }) {
+    const { toast } = useToast();
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(result.summary).then(() => {
+            toast({
+                description: 'Summary copied to clipboard!',
+            });
+        });
+    };
+
     return (
         <Card className="animate-fade-in-slide-up">
-            <CardContent className="pt-6 space-y-3">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <FileText className="text-primary"/>
+            <CardHeader className='flex-row items-center justify-between'>
+                <CardTitle className="flex items-center gap-2">
+                    <FileText className="text-primary h-6 w-6"/>
                     Summary
-                </h3>
+                </CardTitle>
+                 <Button variant="ghost" size="icon" onClick={handleCopy}>
+                    <ClipboardCopy />
+                </Button>
+            </CardHeader>
+            <CardContent>
                 <p className="text-muted-foreground">{result.summary}</p>
             </CardContent>
         </Card>
