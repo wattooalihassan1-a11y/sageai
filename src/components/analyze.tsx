@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Lightbulb, ListChecks, Target, Wand, AlertTriangle } from 'lucide-react';
+import { Lightbulb, ListChecks, Target, Wand, AlertTriangle, ClipboardCopy } from 'lucide-react';
 import { getProblemAnalysis } from '@/app/actions';
 import type { AnalyzeProblemOutput } from '@/ai/flows/analyze-problem';
 import { Skeleton } from './ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 export function Analyze() {
   const [problem, setProblem] = useState('');
@@ -67,34 +69,63 @@ export function Analyze() {
 }
 
 function AnalysisResult({ analysis }: { analysis: AnalyzeProblemOutput }) {
+    const { toast } = useToast();
+
+    const handleCopy = () => {
+        const textToCopy = `
+Key Components:
+- ${analysis.keyComponents.join('\n- ')}
+
+Root Cause Analysis:
+${analysis.rootCause}
+
+Suggested First Steps:
+${analysis.firstSteps.map((step, i) => `${i + 1}. ${step}`).join('\n')}
+        `.trim();
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            toast({
+                description: 'Analysis copied to clipboard!',
+            });
+        });
+    };
+
     return (
-        <div className="space-y-6 pt-4 animate-fade-in-slide-up">
-            <div className="space-y-3">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <ListChecks className="text-primary"/>
-                    Key Components
-                </h3>
-                <ul className="list-disc list-inside pl-4 space-y-1 text-muted-foreground">
-                    {analysis.keyComponents.map((item, i) => <li key={i}>{item}</li>)}
-                </ul>
-            </div>
-            <div className="space-y-3">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Target className="text-primary"/>
-                    Root Cause Analysis
-                </h3>
-                <p className="text-muted-foreground">{analysis.rootCause}</p>
-            </div>
-            <div className="space-y-3">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Wand className="text-primary"/>
-                    Suggested First Steps
-                </h3>
-                <ul className="list-decimal list-inside pl-4 space-y-1 text-muted-foreground">
-                    {analysis.firstSteps.map((item, i) => <li key={i}>{item}</li>)}
-                </ul>
-            </div>
-        </div>
+        <Card className="animate-fade-in-slide-up">
+            <CardHeader className='flex-row items-center justify-between'>
+                <CardTitle>Analysis Result</CardTitle>
+                 <Button variant="ghost" size="icon" onClick={handleCopy}>
+                    <ClipboardCopy />
+                </Button>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="space-y-3">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                        <ListChecks className="text-primary"/>
+                        Key Components
+                    </h3>
+                    <ul className="list-disc list-inside pl-4 space-y-1 text-muted-foreground">
+                        {analysis.keyComponents.map((item, i) => <li key={i}>{item}</li>)}
+                    </ul>
+                </div>
+                <div className="space-y-3">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                        <Target className="text-primary"/>
+                        Root Cause Analysis
+                    </h3>
+                    <p className="text-muted-foreground">{analysis.rootCause}</p>
+                </div>
+                <div className="space-y-3">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                        <Wand className="text-primary"/>
+                        Suggested First Steps
+                    </h3>
+                    <ul className="list-decimal list-inside pl-4 space-y-1 text-muted-foreground">
+                        {analysis.firstSteps.map((item, i) => <li key={i}>{item}</li>)}
+                    </ul>
+                </div>
+            </CardContent>
+        </Card>
     )
 }
 
