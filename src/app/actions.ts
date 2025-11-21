@@ -44,10 +44,12 @@ export async function getAiResponse(
       const result = await generatePicture(input);
       return { image: result.imageUrl };
     }
+    
+    const recentHistory = history.slice(-5);
 
     const input: MaintainConversationContextInput = {
       userInput: userInput,
-      conversationHistory: history,
+      conversationHistory: recentHistory,
       persona: settings.persona,
       language: settings.language,
       image,
