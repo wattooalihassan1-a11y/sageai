@@ -7,23 +7,8 @@ import {
   Combine,
   MessageSquareQuote,
   BrainCircuit,
-  BookText,
-  ListTodo,
-  FileCode,
-  Pencil,
-  ImageIcon,
-  Gift,
-  Zap,
-  ChevronDown,
-  BarChart,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { Chat } from '@/components/chat';
 import { Analyze } from '@/components/analyze';
@@ -35,15 +20,7 @@ const capabilities = [
   { name: 'Solve', icon: Sparkles, component: <Chat /> },
   { name: 'Analyze', icon: Lightbulb, component: <Analyze /> },
   { name: 'Explain', icon: MessageSquareQuote, component: <Explain /> },
-  { name: 'Summarize Text', icon: Combine, component: <Summarize /> },
-  { name: 'Get Advise', icon: BookText, component: <ComingSoon name="Get Advise" /> },
-  { name: 'Make a Plan', icon: ListTodo, component: <ComingSoon name="Make a Plan" /> },
-  { name: 'Analyze Data', icon: BarChart, component: <ComingSoon name="Analyze Data" /> },
-  { name: 'Code', icon: FileCode, component: <ComingSoon name="Code" /> },
-  { name: 'Help me Write', icon: Pencil, component: <ComingSoon name="Help me Write" /> },
-  { name: 'Analyze Image', icon: ImageIcon, component: <ComingSoon name="Analyze Image" /> },
-  { name: 'Surprise Me', icon: Gift, component: <ComingSoon name="Surprise Me" /> },
-  { name: 'Brainstorm', icon: Zap, component: <ComingSoon name="Brainstorm" /> },
+  { name: 'Summarize', icon: Combine, component: <Summarize /> },
 ];
 
 export function CodeForge() {
