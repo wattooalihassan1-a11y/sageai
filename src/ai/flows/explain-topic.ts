@@ -31,7 +31,7 @@ const prompt = ai.definePrompt({
 A user wants to understand the following topic. Provide a clear explanation, a few simple examples, and a relatable analogy.
 
 Topic:
-{{{topic}}}
+{{topic}}
 `,
 });
 

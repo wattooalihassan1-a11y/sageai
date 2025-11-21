@@ -28,7 +28,7 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert at summarizing text. Please provide a concise summary of the following content.
 
 Text to summarize:
-{{{text}}}
+{{text}}
 `,
 });
 

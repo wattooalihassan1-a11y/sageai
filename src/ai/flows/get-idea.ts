@@ -29,7 +29,7 @@ const prompt = ai.definePrompt({
 Generate a list of unique and interesting ideas.
 
 Topic:
-{{{topic}}}
+{{topic}}
 `,
 });
 

@@ -33,13 +33,13 @@ const prompt = ai.definePrompt({
   prompt: `You are a multilingual AI assistant. The user will provide a query and a desired language.
 You must respond to the query in the specified language.
 
-User Query: {{{userQuery}}}
+User Query: {{userQuery}}
 
-Language: {{{language}}}
-{% if image %}
+Language: {{language}}
+{{#if image}}
 Image:
 {{media url=image}}
-{% endif %}
+{{/if}}
 
 Response:`,
 });

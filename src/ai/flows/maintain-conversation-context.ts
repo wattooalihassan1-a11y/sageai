@@ -30,10 +30,15 @@ export const maintainConversationContext = ai.defineFlow(
   async (input) => {
     const { userInput, conversationHistory, image, persona, language } = input;
     
-    const systemPrompt = `You are a helpful AI assistant.
-${persona ? `Please adopt the following persona: ${persona}.` : ''}
-${language ? `Please respond in the following language: ${language}.` : "Respond in the same language as the user's input."}
-`;
+    let systemPrompt = 'You are a helpful AI assistant.';
+    if (persona) {
+      systemPrompt += ` Please adopt the following persona: ${persona}.`;
+    }
+    if (language) {
+      systemPrompt += ` Please respond in the following language: ${language}.`;
+    } else {
+      systemPrompt += " Respond in the same language as the user's input.";
+    }
     
     const history = conversationHistory?.map(msg => ({
         role: msg.role === 'assistant' ? 'model' : 'user',

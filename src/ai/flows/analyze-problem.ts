@@ -31,7 +31,7 @@ const prompt = ai.definePrompt({
 Break it down into its key components, identify the most likely root cause, and suggest a few concrete first steps the user could take to begin resolving it.
 
 Problem:
-{{{problem}}}
+{{problem}}
 `,
 });
 
