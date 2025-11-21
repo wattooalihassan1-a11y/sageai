@@ -35,7 +35,7 @@ export function CodeForge() {
             key={capability.name}
             variant={activeCapability.name === capability.name ? 'default' : 'outline'}
             className={cn(
-              "flex flex-col items-center justify-center h-16 w-full p-2 gap-1",
+              "flex flex-col items-center justify-center h-14 w-full p-1 gap-1",
               "text-xs font-semibold leading-tight text-center"
             )}
             onClick={() => setActiveCapability(capability)}
