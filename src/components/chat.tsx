@@ -52,7 +52,7 @@ export function Chat({ onViewChange }: ChatProps) {
   }, []);
 
   const handleSubmit = useCallback(async (e?: React.FormEvent, voiceInput?: string) => {
-    e?.preventDefault();
+    if (e) e.preventDefault();
     if (recognitionRef.current && isRecording) {
       recognitionRef.current.stop();
     }
@@ -104,8 +104,7 @@ export function Chat({ onViewChange }: ChatProps) {
   }, [input, image, isPending, messages, settings, onViewChange, isRecording]);
 
   useEffect(() => {
-    // Only scroll to bottom if there are more than the initial messages or if pending
-    if (messages.length > initialMessages.length || isPending) {
+    if (messages.length > 1 || isPending) {
         scrollToBottom();
     }
   }, [messages, isPending, scrollToBottom]);
@@ -120,7 +119,8 @@ export function Chat({ onViewChange }: ChatProps) {
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
-        handleSubmit(undefined, transcript);
+        setInput(transcript); // Set input and let user submit
+        setIsRecording(false);
       };
 
       recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -133,7 +133,7 @@ export function Chat({ onViewChange }: ChatProps) {
         setIsRecording(false);
       };
     }
-  }, [toast, handleSubmit]);
+  }, [toast]);
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -156,25 +156,31 @@ export function Chat({ onViewChange }: ChatProps) {
         recognitionRef.current.stop();
     } else {
         recognitionRef.current.start();
+        setIsRecording(true);
     }
-    setIsRecording(!isRecording);
   };
   
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSubmit(e);
     if (isRecording) {
         handleStopRecording(true);
     }
+    handleSubmit(e);
   };
 
   const handleStopRecording = (shouldSubmit: boolean) => {
     if (recognitionRef.current) {
-        if (!shouldSubmit) {
+        if (shouldSubmit) {
+            recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+                const transcript = event.results[0][0].transcript;
+                handleSubmit(undefined, transcript);
+            };
+        } else {
             // Overwrite onresult to do nothing before stopping
             recognitionRef.current.onresult = () => {};
         }
         recognitionRef.current.stop();
+        setIsRecording(false);
     }
   };
 
@@ -386,7 +392,7 @@ function ChatMessage({ message }: ChatMessageProps) {
           </div>
         )}
         <div className="absolute -bottom-2 -right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-            {message.audio && (
+            {!isUser && message.audio && (
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePlayAudio}>
                     <Speaker size={16} className={cn(isPlaying && 'text-primary animate-pulse')} />
                 </Button>
