@@ -20,9 +20,6 @@ const GenerateResponseOutputSchema = z.object({
 });
 export type GenerateResponseOutput = z.infer<typeof GenerateResponseOutputSchema>;
 
-export async function generateResponse(input: GenerateResponseInput): Promise<GenerateResponseOutput> {
-  return generateResponseFlow(input);
-}
 
 const prompt = ai.definePrompt({
   name: 'generateResponsePrompt',
@@ -33,7 +30,7 @@ const prompt = ai.definePrompt({
 {{prompt}}`,
 });
 
-const generateResponseFlow = ai.defineFlow(
+export const generateResponse = ai.defineFlow(
   {
     name: 'generateResponseFlow',
     inputSchema: GenerateResponseInputSchema,

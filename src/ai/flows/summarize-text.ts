@@ -20,9 +20,6 @@ const SummarizeTextOutputSchema = z.object({
 });
 export type SummarizeTextOutput = z.infer<typeof SummarizeTextOutputSchema>;
 
-export async function summarizeText(input: SummarizeTextInput): Promise<SummarizeTextOutput> {
-  return summarizeTextFlow(input);
-}
 
 const prompt = ai.definePrompt({
   name: 'summarizeTextPrompt',
@@ -35,7 +32,7 @@ Text to summarize:
 `,
 });
 
-const summarizeTextFlow = ai.defineFlow(
+export const summarizeText = ai.defineFlow(
   {
     name: 'summarizeTextFlow',
     inputSchema: SummarizeTextInputSchema,

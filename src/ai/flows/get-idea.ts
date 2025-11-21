@@ -20,9 +20,6 @@ const GetIdeaOutputSchema = z.object({
 });
 export type GetIdeaOutput = z.infer<typeof GetIdeaOutputSchema>;
 
-export async function getIdea(input: GetIdeaInput): Promise<GetIdeaOutput> {
-  return getIdeaFlow(input);
-}
 
 const prompt = ai.definePrompt({
   name: 'getIdeaPrompt',
@@ -36,7 +33,7 @@ Topic:
 `,
 });
 
-const getIdeaFlow = ai.defineFlow(
+export const getIdea = ai.defineFlow(
   {
     name: 'getIdeaFlow',
     inputSchema: GetIdeaInputSchema,

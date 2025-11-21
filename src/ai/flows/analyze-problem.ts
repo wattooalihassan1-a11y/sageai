@@ -22,9 +22,6 @@ const AnalyzeProblemOutputSchema = z.object({
 });
 export type AnalyzeProblemOutput = z.infer<typeof AnalyzeProblemOutputSchema>;
 
-export async function analyzeProblem(input: AnalyzeProblemInput): Promise<AnalyzeProblemOutput> {
-  return analyzeProblemFlow(input);
-}
 
 const prompt = ai.definePrompt({
   name: 'analyzeProblemPrompt',
@@ -38,7 +35,7 @@ Problem:
 `,
 });
 
-const analyzeProblemFlow = ai.defineFlow(
+export const analyzeProblem = ai.defineFlow(
   {
     name: 'analyzeProblemFlow',
     inputSchema: AnalyzeProblemInputSchema,

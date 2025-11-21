@@ -20,31 +20,39 @@ const MaintainConversationContextOutputSchema = z.object({
 });
 export type MaintainConversationContextOutput = z.infer<typeof MaintainConversationContextOutputSchema>;
 
-export async function maintainConversationContext(input: MaintainConversationContextInput): Promise<MaintainConversationContextOutput> {
-  const { userInput, conversationHistory, image, persona, language } = input;
-  
-  const systemPrompt = `${persona || 'You are a helpful AI assistant.'} Your primary instruction is to respond in the same language as the user's input. If a language is specified in the settings, use that. Otherwise, automatically detect and match the user's language. The user has selected '${language || 'not specified'}' as their preferred language.`;
-  
-  const history = conversationHistory?.map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      content: [{text: msg.content}]
-  })) ?? [];
 
-  const promptParts: any[] = [];
-
-  if (image) {
-    promptParts.push({media: {url: image}});
+export const maintainConversationContext = ai.defineFlow(
+  {
+    name: 'maintainConversationContextFlow',
+    inputSchema: MaintainConversationContextInputSchema,
+    outputSchema: MaintainConversationContextOutputSchema,
+  },
+  async (input) => {
+    const { userInput, conversationHistory, image, persona, language } = input;
+    
+    const systemPrompt = `${persona || 'You are a helpful AI assistant.'} Your primary instruction is to respond in the same language as the user's input. If a language is specified in the settings, use that. Otherwise, automatically detect and match the user's language. The user has selected '${language || 'not specified'}' as their preferred language.`;
+    
+    const history = conversationHistory?.map(msg => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        content: [{text: msg.content}]
+    })) ?? [];
+  
+    const promptParts: any[] = [];
+  
+    if (image) {
+      promptParts.push({media: {url: image}});
+    }
+    promptParts.push({text: userInput});
+    
+    const result = await ai.generate({
+      model: 'googleai/gemini-2.5-flash',
+      system: systemPrompt,
+      history: history,
+      prompt: promptParts,
+    });
+    
+    const responseText = result.text;
+  
+    return { response: responseText };
   }
-  promptParts.push({text: userInput});
-  
-  const result = await ai.generate({
-    model: 'googleai/gemini-2.5-flash',
-    system: systemPrompt,
-    history: history,
-    prompt: promptParts,
-  });
-  
-  const responseText = result.text;
-
-  return { response: responseText };
-}
+);

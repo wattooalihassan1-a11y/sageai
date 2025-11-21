@@ -30,6 +30,7 @@ import {
 } from '@/ai/flows/get-idea';
 
 import type { ConversationHistory, Settings } from '@/lib/types';
+import { run } from 'genkit';
 
 export async function getAiResponse(
   history: ConversationHistory[],
@@ -41,7 +42,7 @@ export async function getAiResponse(
     if (userInput.startsWith('/imagine ')) {
       const prompt = userInput.replace('/imagine ', '');
       const input: GeneratePictureInput = { prompt };
-      const result = await generatePicture(input);
+      const result = await run(generatePicture, input);
       return { image: result.imageUrl };
     }
 
@@ -52,7 +53,7 @@ export async function getAiResponse(
       language: settings.language,
       image,
     };
-    const result = await maintainConversationContext(input);
+    const result = await run(maintainConversationContext, input);
     return { response: result.response };
   } catch (error: any) {
     console.error('Error getting AI response:', error);
@@ -65,7 +66,7 @@ export async function getProblemAnalysis(
 ): Promise<{ analysis?: AnalyzeProblemOutput; error?: string }> {
   try {
     const input: AnalyzeProblemInput = { problem };
-    const analysis = await analyzeProblem(input);
+    const analysis = await run(analyzeProblem, input);
     return { analysis };
   } catch (error: any) {
     console.error('Error analyzing problem:', error);
@@ -78,7 +79,7 @@ export async function getTopicExplanation(
 ): Promise<{ explanation?: ExplainTopicOutput; error?: string }> {
   try {
     const input: ExplainTopicInput = { topic };
-    const explanation = await explainTopic(input);
+    const explanation = await run(explainTopic, input);
     return { explanation };
   } catch (error: any) {
     console.error('Error getting explanation:', error);
@@ -91,7 +92,7 @@ export async function getSummary(
 ): Promise<{ summary?: SummarizeTextOutput; error?: string }> {
   try {
     const input: SummarizeTextInput = { text };
-    const summary = await summarizeText(input);
+    const summary = await run(summarizeText, input);
     return { summary };
   } catch (error: any) {
     console.error('Error getting summary:', error);
@@ -104,7 +105,7 @@ export async function getIdeaAction(
 ): Promise<{ ideas?: GetIdeaOutput; error?: string }> {
   try {
     const input: GetIdeaInput = { topic };
-    const ideas = await getIdea(input);
+    const ideas = await run(getIdea, input);
     return { ideas };
   } catch (error: any) {
     console.error('Error getting ideas:', error);

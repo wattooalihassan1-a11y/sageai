@@ -25,9 +25,6 @@ const RespondInLanguageOutputSchema = z.object({
 
 export type RespondInLanguageOutput = z.infer<typeof RespondInLanguageOutputSchema>;
 
-export async function respondInLanguage(input: RespondInLanguageInput): Promise<RespondInLanguageOutput> {
-  return respondInLanguageFlow(input);
-}
 
 const prompt = ai.definePrompt({
   name: 'respondInLanguagePrompt',
@@ -47,7 +44,7 @@ Image:
 Response:`,
 });
 
-const respondInLanguageFlow = ai.defineFlow(
+export const respondInLanguage = ai.defineFlow(
   {
     name: 'respondInLanguageFlow',
     inputSchema: RespondInLanguageInputSchema,

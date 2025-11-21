@@ -20,11 +20,8 @@ const GeneratePictureOutputSchema = z.object({
 });
 export type GeneratePictureOutput = z.infer<typeof GeneratePictureOutputSchema>;
 
-export async function generatePicture(input: GeneratePictureInput): Promise<GeneratePictureOutput> {
-  return generatePictureFlow(input);
-}
 
-const generatePictureFlow = ai.defineFlow(
+export const generatePicture = ai.defineFlow(
   {
     name: 'generatePictureFlow',
     inputSchema: GeneratePictureInputSchema,
