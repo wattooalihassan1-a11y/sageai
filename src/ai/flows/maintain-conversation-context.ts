@@ -30,7 +30,10 @@ export const maintainConversationContext = ai.defineFlow(
   async (input) => {
     const { userInput, conversationHistory, image, persona, language } = input;
     
-    const systemPrompt = `${persona || 'You are a helpful AI assistant.'} Your primary instruction is to respond in the same language as the user's input. If a language is specified in the settings, use that. Otherwise, automatically detect and match the user's language. The user has selected '${language || 'not specified'}' as their preferred language.`;
+    const systemPrompt = `You are a helpful AI assistant.
+${persona ? `Please adopt the following persona: ${persona}.` : ''}
+${language ? `Please respond in the following language: ${language}.` : "Respond in the same language as the user's input."}
+`;
     
     const history = conversationHistory?.map(msg => ({
         role: msg.role === 'assistant' ? 'model' : 'user',
