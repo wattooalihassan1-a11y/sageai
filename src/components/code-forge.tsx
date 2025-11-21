@@ -29,7 +29,7 @@ export function CodeForge() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+      <div className="grid grid-cols-5 gap-2">
         {capabilities.map((capability) => (
           <Button
             key={capability.name}
