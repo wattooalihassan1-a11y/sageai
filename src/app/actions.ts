@@ -13,6 +13,12 @@ import {
   type AnalyzeProblemInput,
   type AnalyzeProblemOutput,
 } from '@/ai/flows/analyze-problem';
+import {
+  explainTopic,
+  type ExplainTopicInput,
+  type ExplainTopicOutput,
+} from '@/ai/flows/explain-topic';
+
 import type { ConversationHistory, Settings } from '@/lib/types';
 
 export async function getAiResponse(
@@ -54,5 +60,18 @@ export async function getProblemAnalysis(
   } catch (error: any) {
     console.error('Error analyzing problem:', error);
     return { error: 'Sorry, I encountered an error during analysis. Please try again.' };
+  }
+}
+
+export async function getTopicExplanation(
+  topic: string
+): Promise<{ explanation?: ExplainTopicOutput; error?: string }> {
+  try {
+    const input: ExplainTopicInput = { topic };
+    const explanation = await explainTopic(input);
+    return { explanation };
+  } catch (error: any) {
+    console.error('Error getting explanation:', error);
+    return { error: 'Sorry, I encountered an error. Please try again.' };
   }
 }

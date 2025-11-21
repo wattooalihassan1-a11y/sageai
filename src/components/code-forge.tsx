@@ -27,10 +27,12 @@ import {
 import { cn } from '@/lib/utils';
 import { Chat } from '@/components/chat';
 import { Analyze } from '@/components/analyze';
+import { Explain } from '@/components/explain';
 
 const capabilities = [
   { name: 'Solve', icon: Sparkles, component: <Chat /> },
   { name: 'Analyze', icon: Lightbulb, component: <Analyze /> },
+  { name: 'Explain', icon: MessageSquareQuote, component: <Explain /> },
   { name: 'Get Advise', icon: BookText, component: <ComingSoon name="Get Advise" /> },
   { name: 'Summarize Text', icon: Combine, component: <ComingSoon name="Summarize Text" /> },
   { name: 'Make a Plan', icon: ListTodo, component: <ComingSoon name="Make a Plan" /> },
@@ -40,7 +42,6 @@ const capabilities = [
   { name: 'Analyze Image', icon: ImageIcon, component: <ComingSoon name="Analyze Image" /> },
   { name: 'Surprise Me', icon: Gift, component: <ComingSoon name="Surprise Me" /> },
   { name: 'Brainstorm', icon: Zap, component: <ComingSoon name="Brainstorm" /> },
-  { name: 'Explain', icon: MessageSquareQuote, component: <ComingSoon name="Explain" /> },
 ];
 
 export function CodeForge() {
