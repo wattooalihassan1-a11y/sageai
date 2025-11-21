@@ -141,14 +141,7 @@ type ChatMessageProps = {
 
 function ChatMessage({ message, onCopy }: ChatMessageProps) {
   const isUser = message.role === 'user';
-  const [copied, setCopied] = useState(false);
-
-  const handleCopyClick = () => {
-    onCopy(message.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
+  
   return (
     <div
       className={cn(
@@ -175,16 +168,6 @@ function ChatMessage({ message, onCopy }: ChatMessageProps) {
           <div className="prose prose-sm dark:prose-invert max-w-none">
             <Markdown>{message.content}</Markdown>
           </div>
-        )}
-        {!isUser && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 h-7 w-7 text-muted-foreground"
-            onClick={handleCopyClick}
-          >
-            {copied ? <Check size={16} /> : <Copy size={16} />}
-          </Button>
         )}
       </div>
       {isUser && (
