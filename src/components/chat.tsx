@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Send, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Speaker, Mic, Trash2, Check } from 'lucide-react';
+import { Sparkles, Send, Settings as SettingsIcon, ClipboardCopy, Paperclip, X, Mic, Trash2, Check } from 'lucide-react';
 import type { ChatMessage as ChatMessageType, Settings, View, Chat as ChatType } from '@/lib/types';
 import { getAiResponse } from '@/app/actions';
 import { cn } from '@/lib/utils';
@@ -12,7 +12,6 @@ import Markdown from 'react-markdown';
 import { useToast } from '@/hooks/use-toast';
 import { ChatSettings } from './chat-settings';
 import { useChatHistory } from '@/hooks/use-chat-history';
-import { LoadingCircle } from './icons';
 
 const initialMessages: ChatMessageType[] = [
     {
@@ -213,7 +212,7 @@ export function Chat({ onViewChange }: ChatProps) {
         
         <div ref={scrollAreaRef} className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-6">
           {(activeChat?.messages ?? []).map((message) => (
-            <ChatMessage key={message.id} message={message} onMessageUpdate={handleMessageUpdate} />
+            <ChatMessage key={message.id} message={message} />
           ))}
           {isPending && (
               <div className="flex items-start gap-4 animate-fade-in-slide-up">
@@ -338,15 +337,10 @@ export function Chat({ onViewChange }: ChatProps) {
 
 type ChatMessageProps = {
   message: ChatMessageType;
-  onMessageUpdate: (message: ChatMessageType) => void;
 };
 
-function ChatMessage({ message, onMessageUpdate }: ChatMessageProps) {
+function ChatMessage({ message }: ChatMessageProps) {
   const { toast } = useToast();
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
   const isUser = message.role === 'user';
   
   const handleCopy = () => {
@@ -358,66 +352,6 @@ function ChatMessage({ message, onMessageUpdate }: ChatMessageProps) {
       });
     }
   };
-
-  const handlePlayAudio = async () => {
-    if (isGeneratingAudio) return;
-
-    if (audioRef.current && !audioRef.current.paused) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-      return;
-    }
-  
-    let audioSrc = message.audio;
-  
-    if (!audioSrc && message.content) {
-      setIsGeneratingAudio(true);
-      try {
-        const { textToSpeech } = await import('@/app/actions');
-        const result = await textToSpeech({ text: message.content });
-        audioSrc = result.audioUrl;
-        onMessageUpdate({ ...message, audio: audioSrc });
-      } catch (error) {
-        console.error("Error generating speech:", error);
-        toast({ variant: 'destructive', description: 'Error generating speech. Please try again later.' });
-        setIsGeneratingAudio(false);
-        return;
-      } finally {
-        setIsGeneratingAudio(false);
-      }
-    }
-  
-    if (audioSrc) {
-        if (audioRef.current) {
-          audioRef.current.src = audioSrc;
-        } else {
-          audioRef.current = new Audio(audioSrc);
-          audioRef.current.onended = () => setIsPlaying(false);
-          audioRef.current.onerror = (e) => {
-            setIsPlaying(false);
-            console.error("Audio playback error", e);
-            toast({ variant: 'destructive', description: 'Error playing audio.' });
-          };
-        }
-      
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(e => {
-          setIsPlaying(false);
-          console.error("Audio playback failed", e);
-          toast({ variant: 'destructive', description: 'Could not play audio.' });
-        });
-    }
-  };
-  
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-        audioRef.current = null;
-      }
-    };
-  }, []);
 
   return (
     <div
@@ -446,15 +380,6 @@ function ChatMessage({ message, onMessageUpdate }: ChatMessageProps) {
           "absolute -bottom-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity",
           isUser ? '-left-2' : '-right-2'
         )}>
-            {message.content && (
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePlayAudio} disabled={isGeneratingAudio}>
-                    {isGeneratingAudio ? (
-                        <LoadingCircle size={16} />
-                    ) : (
-                        <Speaker size={16} className={cn(isPlaying && 'text-primary animate-pulse')} />
-                    )}
-                </Button>
-            )}
             {!isUser && message.content && (
                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy}>
                  <ClipboardCopy size={16} />
