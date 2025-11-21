@@ -4,8 +4,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { AppShell } from '@/components/app-shell';
 
 export const metadata: Metadata = {
-  title: 'Problem Solver AI',
-  description: 'An intelligent problem-solving assistant.',
+  title: 'Clarity AI',
+  description: 'Your intelligent assistant for clarity and problem-solving.',
 };
 
 export default function RootLayout({
