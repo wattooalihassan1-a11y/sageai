@@ -24,7 +24,19 @@ interface ChatSettingsProps {
   onSettingsChange: (settings: Settings) => void;
 }
 
-const languages = ['English', 'Urdu'];
+const languages = [
+  'English',
+  'Urdu',
+  'Spanish',
+  'French',
+  'German',
+  'Hindi',
+  'Arabic',
+  'Chinese (Mandarin)',
+  'Japanese',
+  'Portuguese',
+  'Russian',
+];
 
 const personas = [
   'Helpful Assistant',
