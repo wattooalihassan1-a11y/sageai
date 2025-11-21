@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Send, User, Bot, Settings as SettingsIcon, ClipboardCopy, Paperclip, X } from 'lucide-react';
-import type { ChatMessage as ChatMessageType, Settings } from '@/lib/types';
+import type { ChatMessage as ChatMessageType, Settings, View } from '@/lib/types';
 import { getAiResponse } from '@/app/actions';
 import { cn } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,11 +16,15 @@ const initialMessages: ChatMessageType[] = [
     {
       id: uuidv4(),
       role: 'assistant',
-      content: 'Hello! How can I help you today?',
+      content: 'Hello! How can I help you today? You can use commands like `/analyze <problem>`, `/explain <topic>`, `/summarize <text>`, `/idea <topic>`, or `/imagine <prompt>`.',
     },
 ];
 
-export function Chat() {
+interface ChatProps {
+    onViewChange?: (view: View, data: any) => void;
+}
+
+export function Chat({ onViewChange }: ChatProps) {
   const [messages, setMessages] = useState<ChatMessageType[]>(initialMessages);
   const [input, setInput] = useState('');
   const [isPending, setIsPending] = useState(false);
@@ -91,6 +95,12 @@ export function Chat() {
               image: result.image,
           };
           setMessages((prev) => [...prev, assistantMessage]);
+
+          if (result.view && result.data && onViewChange) {
+            setTimeout(() => {
+              onViewChange(result.view!, result.data);
+            }, 1000);
+          }
       }
     } finally {
         setIsPending(false);

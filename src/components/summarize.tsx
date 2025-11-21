@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Combine, FileText, AlertTriangle, Wand, ClipboardCopy } from 'lucide-react';
@@ -10,11 +10,27 @@ import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useToast } from '@/hooks/use-toast';
 
-export function Summarize() {
+export type SummarizeData = {
+  input: string;
+  result: SummarizeTextOutput;
+}
+
+interface SummarizeProps {
+  initialData?: SummarizeData | null;
+}
+
+export function Summarize({ initialData }: SummarizeProps) {
   const [text, setText] = useState('');
   const [result, setResult] = useState<SummarizeTextOutput | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialData) {
+      setText(initialData.input);
+      setResult(initialData.result);
+    }
+  }, [initialData]);
 
   const handleSummarize = async () => {
     if (!text.trim()) return;

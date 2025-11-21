@@ -29,14 +29,22 @@ import {
   type GetIdeaOutput,
 } from '@/ai/flows/get-idea';
 
-import type { ConversationHistory, Settings } from '@/lib/types';
+import type { ConversationHistory, Settings, View } from '@/lib/types';
+
+type AiResponse = {
+  response?: string;
+  image?: string;
+  view?: View;
+  data?: any;
+  error?: string;
+}
 
 export async function getAiResponse(
   history: ConversationHistory[],
   userInput: string,
   settings: Settings,
   image?: string
-) {
+): Promise<AiResponse> {
   try {
     if (userInput.startsWith('/imagine ')) {
       const prompt = userInput.replace('/imagine ', '');
@@ -45,6 +53,51 @@ export async function getAiResponse(
       return { image: result.imageUrl };
     }
     
+    if (userInput.startsWith('/analyze ')) {
+      const problem = userInput.replace('/analyze ', '');
+      const { analysis, error } = await getProblemAnalysis(problem);
+      if (error) return { error };
+      return { 
+        view: 'Analyze', 
+        data: { input: problem, result: analysis }, 
+        response: `I've analyzed the problem. Switching to the 'Analyze' view to show you the results.` 
+      };
+    }
+
+    if (userInput.startsWith('/explain ')) {
+        const topic = userInput.replace('/explain ', '');
+        const { explanation, error } = await getTopicExplanation(topic);
+        if (error) return { error };
+        return { 
+            view: 'Explain', 
+            data: { input: topic, result: explanation },
+            response: `I've prepared an explanation for you. Switching to the 'Explain' view.`
+        };
+    }
+
+    if (userInput.startsWith('/summarize ')) {
+        const text = userInput.replace('/summarize ', '');
+        const { summary, error } = await getSummary(text);
+        if (error) return { error };
+        return { 
+            view: 'Summarize',
+            data: { input: text, result: summary },
+            response: `I've summarized the text. You can see the result in the 'Summarize' view.`
+        };
+    }
+
+    if (userInput.startsWith('/idea ')) {
+        const topic = userInput.replace('/idea ', '');
+        const { ideas, error } = await getIdeaAction(topic);
+        if (error) return { error };
+        return {
+            view: 'Get Idea',
+            data: { input: topic, result: ideas },
+            response: `Here are some ideas! I'm switching to the 'Get Idea' view for you.`
+        };
+    }
+
+
     const recentHistory = history.slice(-5);
 
     const input: MaintainConversationContextInput = {

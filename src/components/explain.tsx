@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageSquareQuote, BookOpen, Repeat, AlertTriangle, Wand, ClipboardCopy } from 'lucide-react';
@@ -10,11 +10,27 @@ import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useToast } from '@/hooks/use-toast';
 
-export function Explain() {
+export type ExplainData = {
+  input: string;
+  result: ExplainTopicOutput;
+}
+
+interface ExplainProps {
+  initialData?: ExplainData | null;
+}
+
+export function Explain({ initialData }: ExplainProps) {
   const [topic, setTopic] = useState('');
   const [explanation, setExplanation] = useState<ExplainTopicOutput | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialData) {
+      setTopic(initialData.input);
+      setExplanation(initialData.result);
+    }
+  }, [initialData]);
 
   const handleExplain = async () => {
     if (!topic.trim()) return;

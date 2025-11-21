@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Lightbulb, ListChecks, Target, Wand, AlertTriangle, ClipboardCopy } from 'lucide-react';
@@ -10,11 +10,27 @@ import { Skeleton } from './ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
-export function Analyze() {
+export type AnalyzeData = {
+  input: string;
+  result: AnalyzeProblemOutput;
+}
+
+interface AnalyzeProps {
+  initialData?: AnalyzeData | null;
+}
+
+export function Analyze({ initialData }: AnalyzeProps) {
   const [problem, setProblem] = useState('');
   const [analysis, setAnalysis] = useState<AnalyzeProblemOutput | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialData) {
+      setProblem(initialData.input);
+      setAnalysis(initialData.result);
+    }
+  }, [initialData]);
 
   const handleAnalyze = async () => {
     if (!problem.trim()) return;

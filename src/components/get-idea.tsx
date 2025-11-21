@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Brain, AlertTriangle, Wand, ClipboardCopy } from 'lucide-react';
@@ -10,11 +10,27 @@ import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useToast } from '@/hooks/use-toast';
 
-export function GetIdea() {
+export type IdeaData = {
+  input: string;
+  result: GetIdeaOutput;
+}
+
+interface GetIdeaProps {
+  initialData?: IdeaData | null;
+}
+
+export function GetIdea({ initialData }: GetIdeaProps) {
   const [topic, setTopic] = useState('');
   const [result, setResult] = useState<GetIdeaOutput | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialData) {
+      setTopic(initialData.input);
+      setResult(initialData.result);
+    }
+  }, [initialData]);
 
   const handleGetIdea = async () => {
     if (!topic.trim()) return;

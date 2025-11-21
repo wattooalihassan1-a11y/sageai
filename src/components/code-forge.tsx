@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Sparkles,
   Lightbulb,
@@ -10,22 +10,35 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Chat } from '@/components/chat';
-import { Analyze } from '@/components/analyze';
-import { Explain } from '@/components/explain';
-import { Summarize } from '@/components/summarize';
-import { GetIdea } from '@/components/get-idea';
+import { Analyze, type AnalyzeData } from '@/components/analyze';
+import { Explain, type ExplainData } from '@/components/explain';
+import { Summarize, type SummarizeData } from '@/components/summarize';
+import { GetIdea, type IdeaData } from '@/components/get-idea';
 import { cn } from '@/lib/utils';
+import type { Capability, View } from '@/lib/types';
 
-const capabilities = [
-  { name: 'Solve', icon: Sparkles, component: <Chat /> },
-  { name: 'Analyze', icon: Lightbulb, component: <Analyze /> },
-  { name: 'Explain', icon: MessageSquareQuote, component: <Explain /> },
-  { name: 'Summarize', icon: Combine, component: <Summarize /> },
-  { name: 'Get Idea', icon: Brain, component: <GetIdea /> },
-];
 
 export function CodeForge() {
-  const [activeCapability, setActiveCapability] = useState(capabilities[0]);
+  const [viewData, setViewData] = useState<Record<string, any>>({});
+
+  const capabilities: Capability[] = useMemo(() => [
+    { name: 'Solve', icon: Sparkles, component: <Chat onViewChange={handleViewChange} /> },
+    { name: 'Analyze', icon: Lightbulb, component: <Analyze initialData={viewData['Analyze']} /> },
+    { name: 'Explain', icon: MessageSquareQuote, component: <Explain initialData={viewData['Explain']} /> },
+    { name: 'Summarize', icon: Combine, component: <Summarize initialData={viewData['Summarize']} /> },
+    { name: 'Get Idea', icon: Brain, component: <GetIdea initialData={viewData['Get Idea']} /> },
+  ], [viewData]);
+
+  const [activeCapability, setActiveCapability] = useState<Capability>(capabilities[0]);
+  
+  function handleViewChange(view: View, data: any) {
+    const targetView = capabilities.find(c => c.name === view);
+    if (targetView) {
+      setViewData(prev => ({ ...prev, [view]: data }));
+      setActiveCapability(targetView);
+    }
+  }
+
 
   return (
     <div className="flex flex-col gap-4">
@@ -47,7 +60,11 @@ export function CodeForge() {
       </div>
 
       <div className="rounded-xl border bg-card p-6 shadow-sm min-h-[600px]">
-        {activeCapability.component}
+        {React.cloneElement(activeCapability.component, { 
+          key: activeCapability.name,
+          onViewChange: handleViewChange,
+          initialData: viewData[activeCapability.name]
+        })}
       </div>
     </div>
   );
